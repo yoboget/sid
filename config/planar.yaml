@@ -1,0 +1,52 @@
+
+data:
+  max_num_nodes: 64
+
+training:
+  batch_size: 64
+  learning_rate: 0.0001
+  lr_decay: 0.5
+  decay_iteration: 100000
+  betas:
+    beta1: 0.9
+    beta2: 0.999
+  epochs: 100_000
+  val_size: 40
+  #dropout: 0
+
+model:
+  nhf: 256
+  edge_node_ratio: 4
+  n_layers: 8
+  mlp_n_layers: 3
+  normalization: layer_norm
+  T: 128
+  prior: marginal # 'masking', 'absorbing', 'marginal'
+  input_time: True
+  predict_all: True
+  conditional: False
+
+regressor:
+  denoiser: True
+
+extra_features:
+  spectral_embeddings: True
+  k: 5
+  graph_size: True
+  molecular_feat: False
+  cycles: True
+
+sampling:
+  id: True
+  critical: False
+  classifier_guidance: False
+  classifier_free_guidance: False
+
+log:
+  n_loggin_steps: 1000
+  n_loggin_epochs: 1000
+  n_test_samples: 40
+  n_val_samples: 32
+  sampling_batch_size: 40
+  n_samples_generation: 40
+  save_graphs: False

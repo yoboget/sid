@@ -1,0 +1,49 @@
+
+data:
+  max_num_nodes: 9
+
+training:
+  batch_size: 32
+  learning_rate: 0.0002
+  lr_decay: 0.5
+  decay_iteration: 1_000_000
+  betas:
+    beta1: 0.9
+    beta2: 0.999
+  epochs: 1000
+  val_size: 1000
+  #dropout: 0
+
+model:
+  nhf: 64
+  edge_node_ratio: 4
+  n_layers: 4
+  mlp_n_layers: 3
+  normalization: layer_norm
+  T: 500
+  prior: marginal # 'masking', 'absorbing', 'marginal'
+  classifier_guidance: False
+  classifier_free_guidance: False
+  ema: True
+
+extra_features:
+  spectral_embeddings: True
+  k: 5
+  graph_size: True
+  molecular_feat: True
+  cycles: False
+
+sampling:
+  id: True
+  critical: False
+
+regressor:
+  denoiser: False
+
+log:
+  n_loggin_steps: 1000
+  n_loggin_epochs: 5
+  n_val_samples: 1000
+  sampling_batch_size: 1000
+  n_samples_generation: 1000
+  save_graphs: False
