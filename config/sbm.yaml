@@ -24,7 +24,6 @@ model:
   prior: marginal # 'masking', 'absorbing', 'marginal'
   input_time: True
   predict_all: True
-  conditional: False
 
 regressor:
   denoiser: True
@@ -39,8 +38,6 @@ extra_features:
 sampling:
   id: True
   critical: False
-  classifier_guidance: False
-  classifier_free_guidance: False
 
 log:
   n_loggin_steps: 1000

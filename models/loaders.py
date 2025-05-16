@@ -7,7 +7,7 @@ from models.models import DenseGNN, DenseGNN3,NodePredictor
 
 
 def load_denoiser(config, loader, extra_features, device, prior,
-                  denoiser_dir=None, conditional=False, conditional_idx=None):
+                  denoiser_dir=None):
     """
     Loads the denoiser and critic models, along with their optimizers and schedulers.
 
@@ -19,12 +19,11 @@ def load_denoiser(config, loader, extra_features, device, prior,
         prior: Type of diffusion prior ('masking', 'absorbing', 'marginal').
         denoiser_dir: Directory to load pre-trained denoiser model from (optional).
         critic_dir: Directory to load pre-trained critic model from (optional).
-        guidance: Tuple containing (cf_guidance, classifier_guidance) booleans for conditional training.
 
     Returns:
         Tuple: ((denoiser, optimizer, scheduler), (critic, critic_optimizer, critic_scheduler))
     """
-    sizes  = get_input_sizes(config, loader, extra_features, prior, conditional, conditional_idx=conditional_idx)
+    sizes  = get_input_sizes(config, loader, extra_features, prior)
     input_sizes, output_sizes, hidden_size, n_node_attr =  sizes
 
     # --- Denoiser ---
@@ -53,11 +52,10 @@ def load_trained_model(model, model_name, model_dir, filename, device):
     model.load_state_dict(saved_model[model_name])
     return model
 
-def get_input_sizes(config, loader, extra_features, prior, conditional, denoiser=True, conditional_idx=None):
+def get_input_sizes(config, loader, extra_features, prior, denoiser=True):
     n_extra_feat = extra_features.n_features
     batch = next(iter(loader['train']))
     n_node_attr = batch.x.size(-1)
-    print(n_node_attr)
     n_edge_attr = batch.edge_attr.size(1)
     nhf = config.model.nhf
 
@@ -73,11 +71,6 @@ def get_input_sizes(config, loader, extra_features, prior, conditional, denoiser
         else:
             nnf_in += 1
             nnf_in += 1
-        if conditional:
-            if conditional_idx is not None:
-                nnf_in += 1 + len(conditional_idx)
-            else:
-                nnf_in += 4
 
         nnf_out = n_node_attr
         nef_out = n_edge_attr
@@ -91,10 +84,9 @@ def get_input_sizes(config, loader, extra_features, prior, conditional, denoiser
         nef_in = n_edge_attr + 1
         return nnf_in, nef_in, nhf
 
-def load_critic(config, loader, extra_features, device, prior, model_dir=None, cf_guidance=False) :
+def load_critic(config, loader, extra_features, device, prior, model_dir=None) :
     if config.train_critic or config.sampling.critical:
-        nnf_in, nef_in, nhf = get_input_sizes(config, loader, extra_features, prior, cf_guidance, denoiser=False)
-        # critic = DenseGNN2(config, nnf_in, nef_in-1, 1, 1, nhf, norm_out=True).to(device)
+        nnf_in, nef_in, nhf = get_input_sizes(config, loader, extra_features, prior, denoiser=False)
         critic = DenseGNN3(config, nnf_in+2, nef_in, 1, 1, nhf, norm_out=True).to(device)
         params = list(critic.parameters())
         betas = config.training.betas.beta1, config.training.betas.beta2

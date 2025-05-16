@@ -33,13 +33,17 @@ HEDD is a Hierarchical Equivariant Discrete Diffusion model.
 
 It takes 4 arguments:
 
-```--dataset``` (str.) The dataset to train. Available: 'zinc', 'sbm20k', 'gitstar', 'reddit'
+```--dataset``` (str.) The dataset to train. Available: 'qm9, ''zinc', 'planar', 'sbm'.
 
-```--work_type``` (str.) Select 'preprocessing', 'train', 'sample' or 'all' (Note that sampling happens anyway during training.)
+```--work_type``` (str.) Select 'train' or 'sample'.
 
-```--reduction``` (list of int.) controls the reduction rates for each coarseness level. Ex. '\[3, 3, 3\]'
+```--train_model``` and ```--train_critic``` (bool.) If train_model is False and train_critic is True, 
+denoiser_dir is required. 
 
 ```--wandb``` Wait and bias 'init' argument ('online', 'offline', 'disabled')
+
+```--denoiser_dir``` and ```--critic_dir``` (str.) Path to directory. 
+
 
 ## Datasets
 

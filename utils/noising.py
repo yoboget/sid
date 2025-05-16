@@ -199,17 +199,12 @@ class NoiserDense:
         elif self.schedule == 'cocosine':
             self.get_alpha_bar = self.cocosine
 
-    def __call__(self, x, a, mask, alpha_bars=None, conditional_probs=None, t=None):
+    def __call__(self, x, a, mask, alpha_bars=None, t=None):
         self.device = a.device
-        if conditional_probs is None:
-            p_x_cond, p_a_cond = None, None
-        else:
-            p_x_cond, p_a_cond = conditional_probs
 
         if alpha_bars is None:
             if t is None:
                 t = torch.rand((x.size(0),)).to(self.device)
-            # alpha_bar = self.noise_schedule.get_alpha_bar(t_normalized=t)
             alpha_bar = self.get_alpha_bar(t)
             alpha_bar_x = alpha_bar.view(-1, 1) * torch.ones(x.size(0), x.size(1)).to(self.device)
             alpha_bar_a = alpha_bar.view(-1, 1, 1) * torch.ones(a.size(0), a.size(1), a.size(2)).to(self.device)
@@ -217,21 +212,21 @@ class NoiserDense:
         else:
             alpha_bar_x, alpha_bar_a = alpha_bars[0], alpha_bars[1]
         if x.size(-1) > 1:
-            x, noise_mask_x = self.noise_x(x, mask, alpha_bar_x, p_x_cond)
+            x, noise_mask_x = self.noise_x(x, mask, alpha_bar_x)
         else:
             noise_mask_x = None
             if self.prior in ['absorbing', 'marginal']:
                 x = torch.cat((x, alpha_bar_x.unsqueeze(-1), 1-alpha_bar_x.unsqueeze(-1)), dim=-1)
 
-        a, noise_mask_a = self.noise_adj(a, mask, alpha_bar_a, p_a_cond)
+        a, noise_mask_a = self.noise_adj(a, mask, alpha_bar_a)
         masks = noise_mask_x, noise_mask_a
-        # print(masks[0][0, 0], t[0], alpha_bar_x[0, 0])
         return x, a, masks, (alpha_bar_x, alpha_bar_a)
 
-    def noise_x(self, x, mask, alpha_bar, p_x_cond=None):
+
+    def noise_x(self, x, mask, alpha_bar):
         absorb = torch.bernoulli(alpha_bar).unsqueeze(-1)
-        if p_x_cond is None:
-            x = x * absorb
+
+        x = x * absorb
         noise_mask = (1 - absorb).bool().squeeze()
         if self.prior == 'masking':
             x = torch.cat((x, 1 - absorb), dim=-1)
@@ -242,29 +237,19 @@ class NoiserDense:
 
         elif self.prior == 'marginal':
             if noise_mask.sum() > 0:
-                if p_x_cond is not None:
-                    p_x = alpha_bar.unsqueeze(-1) * x + (1 - alpha_bar.unsqueeze(-1)) * \
-                            self.marginal_x.view(1, 1, -1).to(self.device)
-                    p_x = p_x * p_x_cond
-                    p_x = p_x /p_x.sum(-1, keepdims=True)
-                    # print(p_x[mask.bool()][p_x[mask.bool()].sum(-1)!=1])
-                    sample = Categorical(probs=p_x[mask.bool()]).sample()
-                    x[mask.bool()] = F.one_hot(sample, num_classes=x.size(-1)).float().to(self.device)
-
-                else:
-                    noise = Categorical(probs=self.marginal_x).sample(x[noise_mask].shape[:-1])
-                    x[noise_mask] = F.one_hot(noise, num_classes=x.size(-1)).float().to(self.device)
+                noise = Categorical(probs=self.marginal_x).sample(x[noise_mask].shape[:-1])
+                x[noise_mask] = F.one_hot(noise, num_classes=x.size(-1)).float().to(self.device)
             x = torch.cat((x, alpha_bar.unsqueeze(-1), 1-alpha_bar.unsqueeze(-1)), dim=-1)
 
         x = x * mask.unsqueeze(-1)
         return x, noise_mask
 
-    def noise_adj(self, a, mask, alpha_bar, p_a_cond=None):
+    def noise_adj(self, a, mask, alpha_bar):
         mask = mask.unsqueeze(1) * mask.unsqueeze(2) * (1-torch.eye(a.size(1)).to(a.device).unsqueeze(0))
         absorb = torch.bernoulli(alpha_bar)
         absorb = absorb.tril(-1) + absorb.tril(-1).transpose(1, 2)
-        if p_a_cond is None:
-            a = a * absorb.unsqueeze(-1)
+
+        a = a * absorb.unsqueeze(-1)
         noise_mask = ~absorb.bool()
         if self.prior == 'masking':
             a = torch.cat((a, 1-absorb.unsqueeze(-1)), dim=-1)
@@ -276,19 +261,9 @@ class NoiserDense:
 
         elif self.prior == 'marginal':
             if noise_mask.sum() > 0:
-                if p_a_cond is not None:
-                    p_a = alpha_bar.unsqueeze(-1) * a + (1 - alpha_bar.unsqueeze(-1)) * \
-                            self.marginal_a.view(1, 1, 1, -1).to(self.device)
-                    p_a = p_a * p_a_cond
-                    # p_a = torch.clamp(p_a, min=0., max=1.)
-                    p_a[p_a.sum(-1) == 0] = 10e-6
-                    p_a = p_a/p_a.sum(-1, keepdims=True)
-                    sample = Categorical(probs=p_a[mask.bool()]).sample()
-                    a[mask.bool()] = F.one_hot(sample, num_classes=a.size(-1)).float()
-                else:
-                    noise = Categorical(probs=self.marginal_a).sample(a[noise_mask].shape[:-1]).to(self.device)
-                    noise = F.one_hot(noise, num_classes=a.size(-1)).float()
-                    a[noise_mask] = noise
+                noise = Categorical(probs=self.marginal_a).sample(a[noise_mask].shape[:-1]).to(self.device)
+                noise = F.one_hot(noise, num_classes=a.size(-1)).float()
+                a[noise_mask] = noise
                 bs, n, _, d = a.shape
                 a = a.permute(0, 3, 1, 2).flatten(0, 1)
                 a = a.tril(-1) + a.tril(-1).transpose(1, 2)

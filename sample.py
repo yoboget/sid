@@ -10,9 +10,9 @@ from torch.distributions.categorical import Categorical
 
 class Sampler:
     def __init__(self, models, prior, noiser, data_infos, extra_features, sampling_batch_size,
-                 diff, device, conditional_loader=None, cf_guidance=False, classifier_guidance=False):
+                 diff, device):
 
-        self.denoiser, self.critic, self.regressor, self.node_predictor = models
+        self.denoiser, self.critic = models
         self.device = device
         self.max_num_nodes, self.n_node_attr, self.n_edge_attr, self.num_node_distribution = data_infos
         self.noiser = noiser
@@ -23,65 +23,29 @@ class Sampler:
         self.noise_sched = NoiseScheduleDiscrete('cosine', self.T)
         self.sampling_batch_size = sampling_batch_size
 
-        self.cf_guidance = cf_guidance
-        self.classifier_guidance = classifier_guidance
-        self.guidance = cf_guidance or classifier_guidance
-        self.conditional_idx = None
 
-        batch = next(iter(conditional_loader))
-        # self.cond = torch.cat((batch.mol_weight, batch.logP, batch.qed), dim=-1)
-        if self.guidance:
-            self.cond_batch = batch.c.to(self.device)
-        else:
-            self.cond_batch = None
-
-
-    def __call__(self, n_samples, models, iter_denoising=True, critic=None,
-                 condition_off=False, conditional_values=None, lambda_guidance=1):
-
-        self.denoiser.eval(), self.regressor.eval(), self.node_predictor.eval()
+    def __call__(self, n_samples, models, iter_denoising=True, critic=None):
+        self.denoiser.eval()
         self.critical = False if critic is None else True
         if self.critic is not None: self.critic.eval()
-        if self.regressor is not None: self.regressor.eval()
-        if self.node_predictor is not None: self.node_predictor.eval()
-
-        self.condition_off = condition_off
-        self.lambda_guidance = lambda_guidance
-        if self.guidance:
-            self.cond_batch = self.cond_batch[:n_samples]
 
         batch_size = self.sampling_batch_size if self.sampling_batch_size < n_samples else n_samples
-        x, a, mask, mask_adj = self.sample_batch(batch_size, iteration=0, iter_denoising=iter_denoising,
-                                                 conditional_values=conditional_values)
+        x, a, mask, mask_adj = self.sample_batch(batch_size,iter_denoising=iter_denoising)
         remaining_samples = n_samples - batch_size
-        iteration = 1
+
         while remaining_samples > 0:
-            x_, a_, mask_, mask_adj_ = self.sample_batch(batch_size, iteration, iter_denoising=iter_denoising,
-                                                         conditional_values=conditional_values)
+            x_, a_, mask_, mask_adj_ = self.sample_batch(batch_size, iter_denoising=iter_denoising)
             x, a, mask, mask_adj = (torch.cat((x , x_), dim=0), torch.cat((a , a_), dim=0),
                                 torch.cat((mask , mask_), dim=0), torch.cat((mask_adj, mask_adj_), dim=0))
             remaining_samples -= batch_size
-            iteration += 1
         X, A, mask, mask_adj = x[:n_samples], a[:n_samples], mask[:n_samples], mask_adj[:n_samples]
         return X, A, mask, mask_adj
 
 
-    def sample_batch(self, n_samples, iteration, iter_denoising=True, conditional_values=None):
+    def sample_batch(self, n_samples, iter_denoising=True):
         print('Sampling starts... ')
-        if self.guidance and not self.condition_off:
-            self.cond = self.cond_batch[iteration*n_samples:(iteration+1)*n_samples].clone()
-            print(iteration*n_samples, (iteration+1)*n_samples)
-            if conditional_values is not None:
-                for i, v in enumerate(conditional_values):
-                    if v is not None:
-                        print(conditional_values.shape)
-                        self.cond[:, i] = v
 
-            n_probs = self.node_predictor(self.cond)
-            n = Categorical(probs=n_probs.softmax(-1)).sample().to(self.device).squeeze() + 1
-        else:
-            n = Categorical(probs=self.num_node_distribution).sample((n_samples,)).to(self.device).squeeze()
-
+        n = Categorical(probs=self.num_node_distribution).sample((n_samples,)).to(self.device).squeeze()
         mask = torch.tril(torch.ones(self.max_num_nodes, self.max_num_nodes)).to(self.device)[n-1].bool()
         x_t, a_t, mask, mask_adj = self.sample_noise(n_samples, mask, iter_denoising)
 
@@ -93,6 +57,7 @@ class Sampler:
             if (i + 1) % 100 == 0:
                 print(f'{i + 1} timesteps done. Sampling resumes...')
         return x_t, a_t, mask.bool(), mask_adj.bool().squeeze()
+
 
     def backward_step_digress(self, t, x_t, e_t, mask):
         """
@@ -234,13 +199,6 @@ class Sampler:
 
         #### DENOISING ###
         x_0, a_0 = self.denoising_step(x_t, a_t, mask, mask_adj)
-        if self.classifier_guidance:
-            # The function return the exponential of the grad of log p(cond|graph), which can be interpreted as probs
-            conditional_probs = self.get_classifier_gradiant(x_0, a_0, mask.bool(), t, noising_guidance=True)
-            # conditional_probs = None
-        else:
-            conditional_probs = None
-        # conditional_probs = None
 
         if self.n_node_attr == 1:
             x_0 = x_t[..., :-2]
@@ -258,8 +216,7 @@ class Sampler:
             alpha_bar = self.noiser.get_alpha_bar(torch.tensor(t-1)/self.T)
             alpha_bar_x = alpha_bar * torch.ones(*x_0.shape[:-1]).to(self.device)
             alpha_bar_a = alpha_bar * torch.ones(*a_0.shape[:-1]).to(self.device)
-            x_s, a_s, self.noise_masks, _ = self.noiser(x_0, a_0, mask, alpha_bars=(alpha_bar_x, alpha_bar_a),
-                                                        conditional_probs=conditional_probs)
+            x_s, a_s, self.noise_masks, _ = self.noiser(x_0, a_0, mask, alpha_bars=(alpha_bar_x, alpha_bar_a))
         if self.t == 1:
             if self.n_node_attr == 1:
                 x_0 = torch.cat((torch.ones(*x_t.shape[:-1], 1).to(self.device), x_0), dim=-1)
@@ -277,42 +234,15 @@ class Sampler:
             x_t = torch.cat((torch.ones(*x_t.shape[:-1], 1).to(self.device), x_t), dim=-1)
         x_t, a_t = self.extra_features(x_t, a_t, mask)
 
-        if self.cf_guidance:
-            if self.condition_off:
-                dy = self.cond_batch.size(-1)
-                cond = torch.eye(dy + 1)[-1].view(1, 1, -1).repeat(*x_t.shape[:2], 1).to(self.device)
-                x_t = torch.cat((x_t, cond), dim=-1)
-                p_x, p_a = self.denoiser(x_t, a_t, mask.bool())
-                p_x, p_a = p_x.softmax(-1), p_a.softmax(-1)
-            else:
-                if self.lambda_guidance != 1:
-                    p_x, p_a = get_cfg_conditional_distribution(self.lambda_guidance, self.denoiser, self.cond,
-                                                                x_t, a_t, mask, self.max_num_nodes)
-                else:
-                    cond = self.cond.repeat(self.max_num_nodes, 1).reshape(*x_t.shape[:2], -1) * mask.unsqueeze(-1)
-                    if self.conditional_idx:
-                        cond = cond[..., self.conditional_idx]
-                    cond_in = torch.zeros(*x_t.shape[:2], 1, device=x_t.device)
-                    x_t = torch.cat((x_t, cond, cond_in), dim=-1)
-                    p_x, p_a = self.denoiser(x_t, a_t, mask.bool())
-                    p_x, p_a = p_x.softmax(-1), p_a.softmax(-1)
+        p_x, p_a = self.denoiser(x_t, a_t, mask.bool())
+
+        p_x = torch.softmax(p_x, dim=-1)
+        if self.n_edge_attr > 1:
+            p_a = torch.softmax(p_a, dim=-1)
         else:
-            p_x, p_a = self.denoiser(x_t, a_t, mask.bool())
+            p_a = torch.sigmoid(p_a)
+            p_a = torch.cat((p_a, 1 - p_a), dim=-1)
 
-            p_x = torch.softmax(p_x, dim=-1)
-            if self.n_edge_attr > 1:
-                p_a = torch.softmax(p_a, dim=-1)
-            else:
-                p_a = torch.sigmoid(p_a)
-                p_a = torch.cat((p_a, 1 - p_a), dim=-1)
-
-        if self.classifier_guidance:
-            dx, da = p_x.size(-1), p_a.size(-1)
-            p_x_cond,  p_a_cond = self.get_classifier_gradiant(x_t[..., :dx], a_t[..., :da], mask, self.t)
-            p_x = p_x * p_x_cond[..., :dx]
-            p_a = p_a * p_a_cond[..., :da]
-            p_x = p_x / p_x.sum(-1, keepdims=True)
-            p_a = p_a / p_a.sum(-1, keepdims=True)
 
         x = Categorical(probs=p_x).sample().to(self.device)
         x_0 = F.one_hot(x, num_classes=p_x.shape[-1]).float()

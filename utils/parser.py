@@ -6,7 +6,7 @@ def parse_args():
     parser = argparse.ArgumentParser()
     parser.add_argument(
         "--dataset", type=str,
-        default='planar',
+        default='qm9',
         help="Name of the dataset. Available:  qm9, zinc, planar, sbm"
     )
 
@@ -23,10 +23,9 @@ def parse_args():
         "--train_critic", type=bool, default=False, help="Whether to train the critic"
     )
 
-
     parser.add_argument(
         "--wandb", type=str,
-        default='online', help="If W&B is online, offline or disabled"
+        default='disabled', help="If W&B is online, offline or disabled"
     )
 
     parser.add_argument(
@@ -38,6 +37,5 @@ def parse_args():
         "--critic_dir", type=str,
         default=None, help="Path to the model directory"
     )
-
 
     return parser.parse_args()

@@ -22,8 +22,6 @@ model:
   normalization: layer_norm
   T: 500
   prior: marginal # 'masking', 'absorbing', 'marginal'
-  classifier_guidance: False
-  classifier_free_guidance: False
   ema: True
 
 extra_features:

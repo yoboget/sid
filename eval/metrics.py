@@ -26,41 +26,32 @@ class SamplingMetrics:
             batch = next(iter(ref_loader))
             X, A, mask = batch_to_dense(batch, max_num_nodes=max_num_nodes)
             self.ref_graphs = get_networkx_from_dense(X.argmax(-1), A.argmax(-1), mask)
-            # plot_batch_networkx_graphs(self.val_graphs[:13])
-
-            # plot_batch_networkx_graphs(self.val_graphs[:40])
-            # pickle.dump(self.test_graphs, open(f'./dump/sbm_test', 'wb'))
         if dataset == 'qm9_cc' or dataset == 'qm9_dg':
             self.mean = torch.tensor([123.0129, 0.1307, 0.4617])
             self.std = torch.tensor([7.6222, 1.1716, 0.0769])
 
-    def __call__(self, X, A, mask, mask_adj, step=None, ema=False,
-                 conditional_values=None, condition_off=False, fname=None,
+    def __call__(self, X, A, mask, mask_adj, step=None, ema=False, fname=None,
                  ref_values=None):
         ema_string = '_ema' if ema else ''
         if ref_values is not None:
             self.ref_values=ref_values
-        conditional_string = '' if conditional_values is None or condition_off else '_conditional'
+
         distrib_metric = self.eval_general_stats(X, A, mask, mask_adj)
 
         if self.dataset in ['qm9', 'zinc', 'qm9_cc', 'qm9_dg']:
-            metrics = self.molecular_metrics((X, A, mask), conditional_values)
+            metrics = self.molecular_metrics((X, A, mask))
 
         elif self.dataset in ['planar', 'sbm']:
             gen_graphs = get_networkx_from_dense(X, A, mask)
             metrics = self.generic_graph_metrics(gen_graphs, self.dataset)
-            # if fname is not None:
-            #     import pickle
-            #     fname = f'./dump/{self.dataset}_{self.transition}_{self.prior}_{self.id}{n_run + 1}{ema_string}'
-            #     pickle.dump(gen_graphs, open(fname, 'wb'))
         else:
             NotImplementedError('Metrics not implemented for this dataset.')
         if not self.sampling:
             metrics['epoch'] = step
-        wandb.log({f'sampling{ema_string}{conditional_string}/': metrics}, step=step)
-        wandb.log({f'distributions{ema_string}{conditional_string}/': distrib_metric}, step=step)
-        print(f'sampling{ema_string}{conditional_string}: ', metrics)
-        print(f'distributions{ema_string}{conditional_string}: ', distrib_metric)
+        wandb.log({f'sampling{ema_string}/': metrics}, step=step)
+        wandb.log({f'distributions{ema_string}/': distrib_metric}, step=step)
+        print(f'sampling{ema_string}: ', metrics)
+        print(f'distributions{ema_string}: ', distrib_metric)
         return metrics
 
     def molecular_metrics(self, gen_graphs, conditional_values=None):
