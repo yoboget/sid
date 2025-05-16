@@ -2,8 +2,8 @@
 
 Official code repository for the paper: [Simple and Critical Iterative Denoising](https://arxiv.org/html/2503.21592v1)
 
-![Autoencoder image](misc/validity.png)
 
+<img src="misc/validity.png" width="250">
 
 ## Installation
 
