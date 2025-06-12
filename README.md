@@ -3,7 +3,9 @@
 Official code repository for the paper: [Simple and Critical Iterative Denoising](https://arxiv.org/html/2503.21592v1)
 
 <img src="misc/graph_sid_mask_bidirection.gif" width="500">
-<img src="misc/graph_sid_marginal_bidirection.gif" width="500">
+
+<img src="misc/graph_sid_marginals_bidirection.gif" width="500">
+
 <img src="misc/validity.png" width="500">
 
 ## Installation
