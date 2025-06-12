@@ -11,6 +11,7 @@ Official code repository for the paper: [Simple and Critical Iterative Denoising
 
 <img src="misc/graph_ddm_mask_bidirection.gif" width="250"> <img src="misc/graph_ddm_marginals_bidirection.gif" width="250">
 
+### Results
 
 <img src="misc/validity.png" width="500">
 
