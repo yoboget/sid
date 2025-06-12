@@ -2,14 +2,17 @@
 
 Official code repository for the paper: [Simple and Critical Iterative Denoising](https://arxiv.org/html/2503.21592v1)
 
-## Mask
 
-<p> 
-    <img src="misc/graph_sid_mask_bidirection.gif" width="300"> 
-    <em>image_caption</em>
-</p>
+### Our Simple Iterative Denoising
 
-<img src="misc/graph_sid_marginals_bidirection.gif" width="300">
+<img src="misc/graph_sid_mask_bidirection.gif" width="250">
+<img src="misc/graph_sid_marginals_bidirection.gif" width="250">
+
+### Standard Discrete Diffusion
+
+<img src="misc/graph_ddm_mask_bidirection.gif" width="250">
+<img src="misc/graph_ddm_marginals_bidirection.gif" width="250">
+
 
 <img src="misc/validity.png" width="500">
 
