@@ -1,5 +1,5 @@
 # Simple and Critical Iterative Denoising
-## Discrete diffusion: Better, Faster, Simplier
+### Discrete diffusion: Better, Faster, Simplier
 
 Official code repository for the paper: [Simple and Critical Iterative Denoising](https://arxiv.org/html/2503.21592v1)
 
