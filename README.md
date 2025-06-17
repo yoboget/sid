@@ -2,11 +2,9 @@
 
 Official code repository for the paper: [Simple and Critical Iterative Denoising](https://arxiv.org/html/2503.21592v1)
 
-<img src="misc/combined_graphs.gif" width="500">
+<img src="misc/combined_graphs.gif" width="300"> <img src="misc/combined_image.gif" width="300">
 
-<img src="misc/combined_image.gif" width="500">
-
-<img src="misc/validity.png" width="500">
+<img src="misc/validity.png" width="150"> <img src="misc/nspdk.png" width="150"> <img src="misc/fcd.png" width="150"> 
 
 ## Installation
 
