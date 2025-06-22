@@ -1,5 +1,16 @@
 # Simple and Critical Iterative Denoising
-### Discrete diffusion: Better, Faster, Simplier
+###### Discrete diffusion: Better, Faster, Simpler
+
+We recommend installing the dependencies in the following order.
+
+5. Anything else in the [requirements.txt](doc/requirements.txt)
+
+```--wandb``` Weights and Biases 'init' argument ('online', 'offline', 'disabled')
+
+## License
+
+This work is licensed under CC BY-NC-SA 4.0
+https://creativecommons.org/licenses/by-nc-sa/4.0/ Discrete diffusion: Better, Faster, Simplier
 
 Official code repository for the paper: [Simple and Critical Iterative Denoising](https://arxiv.org/html/2503.21592v1)
 
