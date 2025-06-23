@@ -1,16 +1,5 @@
 # Simple and Critical Iterative Denoising
-###### Discrete diffusion: Better, Faster, Simpler
-
-We recommend installing the dependencies in the following order.
-
-5. Anything else in the [requirements.txt](doc/requirements.txt)
-
-```--wandb``` Weights and Biases 'init' argument ('online', 'offline', 'disabled')
-
-## License
-
-This work is licensed under CC BY-NC-SA 4.0
-https://creativecommons.org/licenses/by-nc-sa/4.0/ Discrete diffusion: Better, Faster, Simplier
+### Discrete diffusion: Better, Faster, Simpler
 
 Official code repository for the paper: [Simple and Critical Iterative Denoising](https://arxiv.org/html/2503.21592v1)
 
@@ -24,7 +13,7 @@ Official code repository for the paper: [Simple and Critical Iterative Denoising
 
 ## Installation
 
-We recommand to install the dependencies in the following order.
+We recommend to install the dependencies in the following order.
 
 1. rdkit [rdkit.org/docs/Install.html](https://www.rdkit.org/docs/Install.html) 
 
@@ -34,7 +23,7 @@ We recommand to install the dependencies in the following order.
 
 4. dig [https://diveintographs.readthedocs.io/en/latest/intro/installation.html](https://diveintographs.readthedocs.io/en/latest/intro/installation.html)
 
-5. Anything else in the [requirement.txt](doc/requirements.txt)
+5. Anything else in the [requirements.txt](doc/requirements.txt)
 
 
 For the evaluation of generic graph generation tasks, run the following command to compile the ORCA program (see http://www.biolab.si/supp/orca/orca.html):
@@ -46,9 +35,7 @@ g++ -O2 -std=c++11 -o orca orca.cpp
 
 ## Training
 
-HEDD is a Hierarchical Equivariant Discrete Diffusion model.
-
-It takes 4 arguments:
+Our model takes 4 main arguments:
 
 ```--dataset``` (str.) The dataset to train. Available: 'qm9, ''zinc', 'planar', 'sbm'.
 
@@ -57,7 +44,7 @@ It takes 4 arguments:
 ```--train_model``` and ```--train_critic``` (bool.) If train_model is False and train_critic is True, 
 denoiser_dir is required. 
 
-```--wandb``` Wait and bias 'init' argument ('online', 'offline', 'disabled')
+```--wandb``` Weight and bias 'init' argument ('online', 'offline', 'disabled')
 
 ```--denoiser_dir``` and ```--critic_dir``` (str.) Path to directory. 
 
@@ -71,7 +58,7 @@ The datasets and splits are automatically downloaded during preprocessing in a f
 The configuration for all experiments are in the 'config' folder. 
 The configuration files correspond to the configurations used in our experiments. 
 
-## Licence
+## License
 
  This work is licensed under CC BY-NC-SA 4.0 
  https://creativecommons.org/licenses/by-nc-sa/4.0/
