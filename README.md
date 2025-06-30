@@ -1,7 +1,7 @@
 # Simple and Critical Iterative Denoising
 ### Discrete diffusion: Better, Faster, Simpler
 
-Official code repository for the paper: [Simple and Critical Iterative Denoising](https://arxiv.org/html/2503.21592v1)
+Official code repository for the paper: [Simple and Critical Iterative Denoising](https://arxiv.org/html/2503.21592)
 
 <p align="center">
 <img src="misc/combined_graphs.gif" width="400"> <img src="misc/combined_image.gif" width="400">
