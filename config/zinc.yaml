@@ -3,24 +3,24 @@ data:
   max_num_nodes: 38
 
 training:
-  batch_size: 32
+  batch_size: 256
   learning_rate: 0.0001
   lr_decay: 0.5
   decay_iteration: 100_000
   betas:
     beta1: 0.9
     beta2: 0.999
-  epochs: 100
+  epochs: 1000
   val_size: 100
   #dropout: 0
 
 model:
   nhf: 256
   edge_node_ratio: 4
-  n_layers: 4
+  n_layers: 8
   mlp_n_layers: 3
   normalization: layer_norm
-  T: 500
+  T: 128
   transition: marginal # 'masking', 'absorbing', 'marginal'
   input_time: True
   predict_all: True
