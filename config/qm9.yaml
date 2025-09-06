@@ -3,7 +3,7 @@ data:
   max_num_nodes: 9
 
 training:
-  batch_size: 32
+  batch_size: 512
   learning_rate: 0.0002
   lr_decay: 0.5
   decay_iteration: 1_000_000
@@ -15,12 +15,12 @@ training:
   #dropout: 0
 
 model:
-  nhf: 64
+  nhf: 256
   edge_node_ratio: 4
-  n_layers: 4
+  n_layers: 8
   mlp_n_layers: 3
   normalization: layer_norm
-  T: 500
+  T: 128
   prior: marginal # 'masking', 'absorbing', 'marginal'
   ema: True
 
