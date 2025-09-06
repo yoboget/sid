@@ -21,7 +21,7 @@ model:
   mlp_n_layers: 3
   normalization: layer_norm
   T: 128
-  transition: marginal # 'masking', 'absorbing', 'marginal'
+  prior: marginal # 'masking', 'absorbing', 'marginal'
   input_time: True
   predict_all: True
 
@@ -43,3 +43,4 @@ log:
   n_val_samples: 1000
   sampling_batch_size: 20
   n_samples_generation: 20
+  save_graphs: False
