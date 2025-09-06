@@ -20,6 +20,7 @@ def get_dataset(config):
         train_idx, test_idx = idx[10000:], idx[:10000]
         train_idx, val_idx = train_idx[config.training.val_size:], train_idx[:config.training.val_size]
         train, val, test = data[train_idx], data[test_idx], data[val_idx]
+        test_size = 10_000
 
     elif config.dataset == 'qm9':
         transforms = Qm9Transform()
