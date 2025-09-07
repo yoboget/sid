@@ -271,7 +271,7 @@ class Sampler:
                 alpha_bar = alpha_bar.repeat(n_samples, self.max_num_nodes, 1)
                 x_t = torch.cat((x_t, alpha_bar, 1-alpha_bar), dim=-1)
             elif self.prior == 'marginal':
-                self.q0x = self.diff_x.base_distrib
+                self.q0x = self.diff_x.base_distrib.to(self.device)
                 x_t = Categorical(probs=self.q0x).sample((n_samples, self.max_num_nodes)).to(self.device).squeeze()
                 x_t = F.one_hot(x_t, num_classes=self.q0x.shape[-1]).float() * mask.unsqueeze(-1)
                 alpha_bar = self.noiser.get_alpha_bar(torch.ones(1, device=x_t.device))
