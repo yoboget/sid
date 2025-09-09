@@ -38,7 +38,7 @@ class SamplingMetrics:
 
         distrib_metric = self.eval_general_stats(X, A, mask, mask_adj)
 
-        if self.dataset in ['qm9', 'zinc', 'qm9_cc', 'qm9_dg']:
+        if self.dataset in ['qm9', 'zinc', 'qm9_cc', 'qm9_dg', 'qm9H']:
             metrics = self.molecular_metrics((X, A, mask))
 
         elif self.dataset in ['planar', 'sbm']:
@@ -115,7 +115,7 @@ class SamplingMetrics:
         elif self.dataset == 'qm9':
             node_names = ['C', 'N', 'O', 'F']
             edge_names = ['no_bond', 'single', 'double', 'triple']
-        elif self.dataset in ['qm9_cc', 'qm9_dg', 'qm9H',]:
+        elif self.dataset in ['qm9_cc', 'qm9_dg', 'qm9H']:
             node_names = ['H', 'C', 'N', 'O', 'F']
             edge_names = ['no_bond', 'single', 'double', 'triple']
         elif self.dataset in ['planar', 'sbm']:
