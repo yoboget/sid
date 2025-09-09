@@ -13,6 +13,14 @@ class Qm9Transform(BaseTransform):
         data.x = data.x[..., :5]
         return data
 
+class Qm9HTransform(BaseTransform):
+    def __init__(self):
+        super().__init__()
+
+    def __call__(self, data: Data, mol: Chem.rdchem.Mol):
+        data.x = data.x[..., :5]
+        return data
+
 class Qm9ConditionalTransform(BaseTransform):
     def __init__(self):
         super().__init__()

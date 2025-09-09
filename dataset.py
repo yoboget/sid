@@ -6,14 +6,15 @@ from torch_geometric.loader import DataLoader
 from torch_geometric.datasets import QM9
 from utils.utils import batch_to_networkx
 
-from transforms import Qm9Transform, Qm9ConditionalTransform, Qm9DiscreteGuidanceTransform
+from transforms import Qm9Transform, Qm9ConditionalTransform, Qm9DiscreteGuidanceTransform, Qm9HTransform
 from data.datasets import ZINC, QM9_, KekulizedMolDataset, SpectreGraphDataset
 
 def get_dataset(config):
 
     transforms = None
     if config.dataset == 'qm9H':
-        data = QM9(f'./data/qm9H', pre_transform=transforms)
+        transforms = Qm9HTransform()
+        data = QM9_(f'./data/qm9H', pre_transform=transforms)
         SEED = 42
         torch.manual_seed(SEED)
         idx = torch.randperm(len(data))

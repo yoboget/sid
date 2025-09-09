@@ -181,7 +181,7 @@ def gen_mol(x, adj, mask, dataset, largest_connected_comp=True):
         atomic_num_list = [6, 7, 8, 9]
     elif dataset == 'qm9_conditional':
         atomic_num_list = [1, 6, 7, 8, 9, 0]
-    elif dataset == 'qm9_cc' or dataset== 'qm9_dg':
+    elif dataset in ['qm9_cc', 'qm9_dg', 'qm9H']:
         atomic_num_list = [1, 6, 7, 8, 9, 0]
     else:
         atomic_num_list = [6, 7, 8, 9, 15, 16, 17, 35, 53, 0]
@@ -209,9 +209,7 @@ def gen_mol_no_corr(x, adj, dataset):
 
     if dataset == 'qm9':
         atomic_num_list = [6, 7, 8, 9, 0]
-    elif dataset == 'qm9_conditional':
-        atomic_num_list = [1, 6, 7, 8, 9, 0]
-    elif dataset == 'qm9_cc' or dataset == 'qm9_dg':
+    elif dataset in ['qm9_cc', 'qm9_dg', 'qm9H']:
         atomic_num_list = [1, 6, 7, 8, 9, 0]
     else:
         atomic_num_list = [6, 7, 8, 9, 15, 16, 17, 35, 53, 0]
