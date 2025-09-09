@@ -59,7 +59,7 @@ class SamplingMetrics:
         gen_mols, num_no_correct = gen_mol(annots, adjs, mask, self.dataset)
         # for i, mol in enumerate(gen_mols):
 
-        if self.dataset == 'qm9_cc' or self.dataset == 'qm9_dg':
+        if self.dataset in ['qm9_cc', 'qm9_dg', 'qm9H']:
             dataset = 'qm9'
             conditional = True
         else:
@@ -115,7 +115,7 @@ class SamplingMetrics:
         elif self.dataset == 'qm9':
             node_names = ['C', 'N', 'O', 'F']
             edge_names = ['no_bond', 'single', 'double', 'triple']
-        elif self.dataset == 'qm9_cc' or self.dataset == 'qm9_dg':
+        elif self.dataset in ['qm9_cc', 'qm9_dg', 'qm9H',]:
             node_names = ['H', 'C', 'N', 'O', 'F']
             edge_names = ['no_bond', 'single', 'double', 'triple']
         elif self.dataset in ['planar', 'sbm']:
