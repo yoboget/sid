@@ -89,7 +89,6 @@ class Trainer:
         data_infos = self.max_num_nodes, nnf, nef, num_node_distrib
         diff = self.diff_x, self.diff_e
 
-        val_loader = self.loaders['val']
         self.sampling_batch_size = config.log.sampling_batch_size
         models = self.denoiser, self.critic
         self.sampler = Sampler(models, self.prior, self.noiser, data_infos, self.extra_features,
