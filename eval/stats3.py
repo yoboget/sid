@@ -218,7 +218,8 @@ def orca(graph):
     print('path2', os.path.join(ORCA_DIR))
     print(os.path.isfile(os.path.join(ORCA_DIR, 'orca')))
     print(os.access(os.path.join(ORCA_DIR, 'orca'), os.X_OK))
-    output = sp.check_output([os.path.join(ORCA_DIR, 'orca'), 'node', '4', tmp_file_path, 'std'])
+    # output = sp.check_output([os.path.join(ORCA_DIR, 'orca'), 'node', '4', tmp_file_path, 'std'])
+    output = sp.run([os.path.join(ORCA_DIR, 'orca'), 'node', '4', tmp_file_path, 'std'], check=True).stdout
     # output = sp.check_output([os.path.join(ORCA_DIR), 'node', '4', tmp_file_path, 'std'])
     print(output)
     output = output.decode('utf8').strip()
