@@ -208,6 +208,7 @@ def edge_list_reindexed(G):
 def orca(graph):
     tmp_file_path = os.path.join(ORCA_DIR,
                                  f'tmp_{"".join(secrets.choice(ascii_uppercase + digits) for i in range(8))}.txt')
+    print(tmp_file_path)
     f = open(tmp_file_path, 'w')
     f.write(str(graph.number_of_nodes()) + ' ' + str(graph.number_of_edges()) + '\n')
     for (u, v) in edge_list_reindexed(graph):
@@ -219,10 +220,13 @@ def orca(graph):
 
     idx = output.find(COUNT_START_STR) + len(COUNT_START_STR)
     output = output[idx:]
+    print(output)
     node_orbit_counts = np.array([list(map(int, node_cnts.strip().split(' ')))
                                   for node_cnts in output.strip('\n').split('\n')])
+    print(node_orbit_counts)
 
     try:
+        print(tmp_file_path)
         os.remove(tmp_file_path)
     except OSError:
         pass
