@@ -46,14 +46,13 @@ def main() -> None:
                 runs.append(run)
 
             if r == N_RUNS - 1:
-                break
-            keys = runs[0].keys()
-            for key in keys:
-                val = []
-                for run in runs:
-                    val.append(run[key])
-                print(f'mean {key}: {np.asarray(val).mean()}')
-                print(f'std {key}: {np.asarray(val).std()}')
+                keys = runs[0].keys()
+                for key in keys:
+                    val = []
+                    for run in runs:
+                        val.append(run[key])
+                    print(f'mean {key}: {np.asarray(val).mean()}')
+                    print(f'std {key}: {np.asarray(val).std()}')
 
         wandb.finish()
 
