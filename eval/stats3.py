@@ -216,8 +216,8 @@ def orca(graph):
         f.write(str(u) + ' ' + str(v) + '\n')
     f.close()
     print('path2', os.path.join(ORCA_DIR))
-    # output = sp.check_output([os.path.join(ORCA_DIR, 'orca'), 'node', '4', tmp_file_path, 'std'])
-    output = sp.check_output([os.path.join(ORCA_DIR), 'node', '4', tmp_file_path, 'std'])
+    output = sp.check_output([os.path.join(ORCA_DIR, 'orca'), 'node', '4', tmp_file_path, 'std'])
+    # output = sp.check_output([os.path.join(ORCA_DIR), 'node', '4', tmp_file_path, 'std'])
     print(output)
     output = output.decode('utf8').strip()
 
@@ -257,6 +257,7 @@ def orbit_stats_all(graph_ref_list, graph_pred_list, KERNEL='tv'):
     ]
 
     for G in graph_ref_list:
+        orbit_counts = orca(G)
         try:
             orbit_counts = orca(G)
         except:
