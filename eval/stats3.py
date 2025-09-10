@@ -215,10 +215,10 @@ def orca(graph):
     for (u, v) in edge_list_reindexed(graph):
         f.write(str(u) + ' ' + str(v) + '\n')
     f.close()
-
+    print('path2', tmp_file_path)
     output = sp.check_output([os.path.join(ORCA_DIR, 'orca'), 'node', '4', tmp_file_path, 'std'])
     # output = sp.check_output([os.path.join(ORCA_DIR), 'node', '4', tmp_file_path, 'std'])
-    # print(output)
+    print(output)
     output = output.decode('utf8').strip()
 
     idx = output.find(COUNT_START_STR) + len(COUNT_START_STR) + 2
@@ -239,9 +239,10 @@ def orca(graph):
     # print('node', node_orbit_counts)
 
     try:
-        print(tmp_file_path)
+        print('2', tmp_file_path)
         os.remove(tmp_file_path)
     except OSError:
+        print('error')
         pass
 
     return node_orbit_counts
