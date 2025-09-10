@@ -11,7 +11,7 @@ from string import ascii_uppercase, digits
 from eval.mmd import compute_mmd, gaussian, gaussian_emd, compute_nspdk_mmd, gaussian_tv
 #from utils.graph_utils import adjs_to_graphs
 
-import graph_tool.all as gt
+# import graph_tool.all as gt
 from scipy.stats import chi2
 
 import warnings
@@ -189,7 +189,7 @@ motif_to_indices = {
     '3path': [1, 2],
     '4cycle': [8],
 }
-COUNT_START_STR = 'orbit counts: \n'
+COUNT_START_STR = 'orbit counts:'
 
 def edge_list_reindexed(G):
     idx = 0

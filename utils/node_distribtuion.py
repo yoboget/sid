@@ -8,9 +8,8 @@ def get_num_nodes_distribution(loader, max_num_nodes, dataset):
     else:
         num_nodes = 0
         for batch in loader['train']:
-            n = batch.batch.bincount(minlength=max_num_nodes+1)
+            n = batch.batch.bincount()
             num_nodes += n.bincount(minlength=max_num_nodes+1)
         num_nodes_distribution = num_nodes / num_nodes.sum()
-        print(num_nodes_distribution, num_nodes_distribution.shape)
         torch.save(num_nodes_distribution, filepath)
     return num_nodes_distribution
