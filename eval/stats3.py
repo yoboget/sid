@@ -241,15 +241,14 @@ def orca(graph):
         # node_orbit_counts = np.array([list(map(int, node_cnts.strip().split(' ')))
         #                               for node_cnts in output.strip('\n').split('\n')])
         # print('node', node_orbit_counts)
-
-        try:
-            print('2', tmp_file_path)
-            os.remove(tmp_file_path)
-        except OSError:
-            print('error')
-            pass
     else:
         node_orbit_counts = 0
+    try:
+        print('2', tmp_file_path)
+        os.remove(tmp_file_path)
+    except OSError:
+        print('error')
+        pass
 
     return node_orbit_counts
 
