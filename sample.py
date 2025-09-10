@@ -49,15 +49,117 @@ class Sampler:
         mask = torch.tril(torch.ones(self.max_num_nodes, self.max_num_nodes)).to(self.device)[n-1].bool()
         x_t, a_t, mask, mask_adj = self.sample_noise(n_samples, mask, iter_denoising)
 
+        if iter_denoising == 'dfm':
+            x_t = x_t[..., :-2]
         for i, t in enumerate(reversed(range(0, self.T))):
-            if iter_denoising:
+            if iter_denoising == 'sid':
                 x_t, a_t = self.iterative_denoising_step(t, x_t, a_t, mask, mask_adj)
-            else:
+            elif iter_denoising == 'dif':
                 x_t, a_t = self.backward_step_digress(t, x_t, a_t, mask)
+            elif iter_denoising == 'dfm':
+                delta_t = 1 / self.T
+                t = 1-(t / self.T)- delta_t
+                x_t, a_t = self.flow_matching_step(x_t, a_t, t, delta_t, (mask, mask_adj))
+            else:
+                raise NotImplementedError ('Sampling method not implemented.')
             if (i + 1) % 100 == 0:
                 print(f'{i + 1} timesteps done. Sampling resumes...')
         return x_t, a_t, mask.bool(), mask_adj.bool().squeeze()
 
+    def flow_matching_step(self, x_t, a_t, t, delta_t, masks):
+        """
+        Compute a backward step in standard discrete flow matching.
+
+        Given:
+          - x_t: the current state at time t (e.g., a NumPy array or tensor),
+          - t: the current time,
+          - delta_t: the time increment (so that s = t + delta_t),
+          - velocity_fn: a callable that computes the velocity field v(x, t).
+
+        The backward step is computed using a backward Euler update:
+          x_s = x_t - delta_t * v(x_t, t)
+
+        Returns:
+          - x_s: the state at time s = t + delta_t.
+        """
+        # Compute x1
+        mask, mask_adj = masks
+        x_t_time = self.add_time_features(x_t, t, mask)
+        x_t_extra, a_t_extra = self.extra_features(x_t_time, a_t, mask)
+        x1_hat, a1_hat = self.denoiser(x_t_extra, a_t_extra, mask.bool())
+        if a1_hat.size(-1) == 1:
+            a1_hat = torch.cat((a1_hat, 1 - a1_hat), dim=-1)
+        x1_hat, a1_hat = x1_hat.softmax(-1) * mask.unsqueeze(-1), a1_hat.softmax(-1) * mask_adj.unsqueeze(-1)
+        vx, va = self.compute_velocity(x1_hat, x_t, a1_hat, a_t, t, delta_t)
+
+        px_s = x_t + delta_t * vx
+        pa_s = a_t + delta_t * va
+        # if self.classifier_guidance:
+        #     omega = -1000
+        #     guid_x, guid_a = self.get_classifier_guidance(x_t, a_t, mask, t, omega)
+        #     # guid_x, guid_a = self.get_classifier_guidance(px_s, pa_s, mask, t, omega)
+        #     px_s = px_s * guid_x
+        #     pa_s = pa_s * guid_a
+
+        # print(va[0, 1, 0]*delta_t, a_t[0, 1, 0])
+        if t + delta_t < 1:
+            px_s = px_s / px_s.sum(-1, keepdim=True)
+            pa_s = pa_s / pa_s.sum(-1, keepdim=True)
+            x_s, a_s = self.sample_ps(px_s, pa_s, masks)
+        else:
+            x_s, a_s = px_s.argmax(-1) * mask, pa_s.argmax(-1) * mask_adj
+            x_s, a_s = x_s.int(), a_s.int()
+        return x_s, a_s
+
+    def sample_ps(self, px, pa, masks):
+        mask, mask_adj = masks
+        x_s = torch.zeros_like(px)
+        x = Categorical(probs=px[mask.bool()]).sample().to(self.device)
+        x_s[mask.bool()] = F.one_hot(x, num_classes=px.shape[-1]).float()
+        x_s = x_s * mask.unsqueeze(-1)
+
+        a_s =  torch.zeros_like(pa)
+        a = Categorical(probs=pa[mask_adj.bool()]).sample().to(self.device)
+        a_s[mask_adj.bool()] = F.one_hot(a, num_classes=pa.shape[-1]).float()
+        a_s = a_s.permute(0, 3, 1, 2)
+        a_s = a_s.tril(-1) + a_s.tril(-1).transpose(2, 3)
+        a_s = a_s.permute(0, 2, 3, 1)
+        a_s = a_s * mask_adj.unsqueeze(-1)
+        return x_s, a_s
+
+    def compute_velocity(self, x1_hat, xt, a1_hat, at, t, delta_t):
+        """
+        Compute the velocity field v(x, t) for flow matching using independent coupling
+        and a convex interpolant.
+
+
+        The velocity field is given by the time derivative of x_t:
+          v(x_t, t) = d/dt x_t = lambda_dot(t) * (x1 - x0)
+
+        Args:
+            x_t: The current state at time t (typically computed as the convex combination above).
+            t: The current time.
+            delta_t: The time increment.
+            lambda_dot_fn: A callable that computes the derivative of lambda(t) with respect to t.
+
+        Returns:
+            The velocity field v(x_t, t) = alpha_dot(t)/(1-alpha) * (x1_hat - xt).
+        """
+
+        # Compute the scalor alpha_dot(t)/(1-alpha_t)
+        s = t + delta_t
+        alpha_s = self.noiser.noise_schedule.get_alpha_bar(t_normalized=torch.tensor([s], device=self.device).float())
+        alpha_t = self.noiser.noise_schedule.get_alpha_bar(t_normalized=torch.tensor([t], device=self.device).float())
+        alpha_dot = (alpha_t-alpha_s) / delta_t
+        scalor = alpha_dot/(alpha_t)
+        return scalor * (x1_hat -xt), scalor * (a1_hat - at)
+
+    def add_time_features(self, x, t, mask):
+        t = torch.tensor([t], device=self.device).float()
+        alpha_t = self.noiser.noise_schedule.get_alpha_bar(t_normalized=1-t)
+        alpha_t = alpha_t * torch.ones(*x.shape[:-1], 1).to(x.device)
+        x = torch.cat((x, alpha_t, 1-alpha_t), dim=-1)
+        return x * mask.unsqueeze(-1)
 
     def backward_step_digress(self, t, x_t, e_t, mask):
         """
@@ -280,7 +382,7 @@ class Sampler:
             x_t = x_t * mask.unsqueeze(-1)
         else:
 
-            if iter_denoising:
+            if iter_denoising == 'sid':
                 x_t = torch.ones(n_samples, self.max_num_nodes, 0).to(self.device) * mask.unsqueeze(-1)
             else: # discrete diffusion
                 x_t = torch.ones(n_samples, self.max_num_nodes, 1).to(self.device) * mask.unsqueeze(-1)

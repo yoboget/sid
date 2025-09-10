@@ -20,7 +20,7 @@ model:
   n_layers: 8
   mlp_n_layers: 3
   normalization: layer_norm
-  T: 128
+  T: 64
   prior: marginal # 'masking', 'absorbing', 'marginal'
   input_time: True
   predict_all: True
@@ -36,7 +36,7 @@ extra_features:
   cycles: True
 
 sampling:
-  id: True
+  id: 'dfm'
   critical: False
 
 log:

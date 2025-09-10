@@ -6,13 +6,13 @@ def parse_args():
     parser = argparse.ArgumentParser()
     parser.add_argument(
         "--dataset", type=str,
-        default='qm9H',
+        default='planar',
         help="Name of the dataset. Available:  qm9, zinc, planar, sbm"
     )
 
     parser.add_argument(
         "--work_type", type=str,
-        default='train', help="Options: train or sample"
+        default='sample', help="Options: train or sample"
     )
 
     parser.add_argument(
@@ -30,7 +30,7 @@ def parse_args():
 
     parser.add_argument(
         "--denoiser_dir", type=str,
-        default=None, help="Path to the model directory"
+        default='./wandb/run-20250909_203913-779743yv/files/', help="Path to the model directory"
     )
 
     parser.add_argument(
