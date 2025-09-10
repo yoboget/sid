@@ -29,7 +29,7 @@ def main() -> None:
 
     elif work_type == 'sample':
         runs = []
-        N_RUNS = 5
+        N_RUNS = 1
         config.denoiser_dir = args.denoiser_dir
         wandb.init(project=f'sid_{dataset}_sample', config=config, mode=args.wandb)
 
