@@ -26,6 +26,18 @@ ORCA_DIR = './eval/orca'
 ##### code adapted from https://github.com/KarolisMart/SPECTRE/blob/main/util/eval_helper.py
 ##### and further adapted from https://github.com/harryjo97/GruM/blob/master/GruM_2D/evaluation/stats.py
 
+def edge_list_reindexed(G):
+    idx = 0
+    id2idx = dict()
+    for u in G.nodes():
+        id2idx[str(u)] = idx
+        idx += 1
+
+    edges = []
+    for u, v in G.edges():
+        edges.append((id2idx[str(u)], id2idx[str(v)]))
+    return edges
+
 def degree_worker(G):
     return np.array(nx.degree_histogram(G))
 
@@ -192,61 +204,41 @@ motif_to_indices = {
 COUNT_START_STR = 'orbit counts: \n'
 
 
-def edge_list_reindexed(G):
-    idx = 0
-    id2idx = dict()
-    for u in G.nodes():
-        id2idx[str(u)] = idx
-        idx += 1
-
-    edges = []
-    for (u, v) in G.edges():
-        edges.append((id2idx[str(u)], id2idx[str(v)]))
-    return edges
-
-
 def orca(graph):
-    tmp_file_path = os.path.join(ORCA_DIR,
-                                 f'tmp_{"".join(secrets.choice(ascii_uppercase + digits) for i in range(8))}.txt')
-    print('path1', tmp_file_path)
-    print(graph.number_of_nodes())
-    f = open(tmp_file_path, 'w')
-    f.write(str(graph.number_of_nodes()) + ' ' + str(graph.number_of_edges()) + '\n')
-    for (u, v) in edge_list_reindexed(graph):
-        f.write(str(u) + ' ' + str(v) + '\n')
+    # tmp_fname = f'analysis/orca/tmp_{"".join(secrets.choice(ascii_uppercase + digits) for i in range(8))}.txt'
+    tmp_fname = f'orca/tmp_{"".join(secrets.choice(ascii_uppercase + digits) for i in range(8))}.txt'
+    tmp_fname = os.path.join(os.path.dirname(os.path.realpath(__file__)), tmp_fname)
+    # print(tmp_fname, flush=True)
+    f = open(tmp_fname, "w")
+    f.write(str(graph.number_of_nodes()) + " " + str(graph.number_of_edges()) + "\n")
+    for u, v in edge_list_reindexed(graph):
+        f.write(str(u) + " " + str(v) + "\n")
     f.close()
-    print('path2', os.path.join(ORCA_DIR))
-    output = sp.check_output([os.path.join(ORCA_DIR, 'orca'), 'node', '4', tmp_file_path, 'std'])
-    # output = sp.check_output([os.path.join(ORCA_DIR), 'node', '4', tmp_file_path, 'std'])
-    print(output)
-    output = output.decode('utf8').strip()
-
+    output = sp.check_output(
+        [
+            str(os.path.join(os.path.dirname(os.path.realpath(__file__)), "orca/orca")),
+            "node",
+            "4",
+            tmp_fname,
+            "std",
+        ]
+    )
+    output = output.decode("utf8").strip()
     idx = output.find(COUNT_START_STR) + len(COUNT_START_STR) + 2
     output = output[idx:]
-    node_orbit_counts = np.array([list(map(int, node_cnts.strip().split(' ')))
-                                  for node_cnts in output.strip('\n').split('\n')])
-
-
-
-    # output = sp.check_output([os.path.join(ORCA_DIR, 'orca'), 'node', '4', tmp_file_path, 'std'])
-    # output = output.decode('utf8').strip()
-    #
-    # idx = output.find(COUNT_START_STR) + len(COUNT_START_STR)
-    # output = output[idx:]
-    # print('output', output)
-    # node_orbit_counts = np.array([list(map(int, node_cnts.strip().split(' ')))
-    #                               for node_cnts in output.strip('\n').split('\n')])
-    # print('node', node_orbit_counts)
+    node_orbit_counts = np.array(
+        [
+            list(map(int, node_cnts.strip().split(" ")))
+            for node_cnts in output.strip("\n").split("\n")
+        ]
+    )
 
     try:
-        print('2', tmp_file_path)
-        os.remove(tmp_file_path)
+        os.remove(tmp_fname)
     except OSError:
-        print('error')
         pass
 
     return node_orbit_counts
-
 
 def orbit_stats_all(graph_ref_list, graph_pred_list, KERNEL='tv'):
     total_counts_ref = []
