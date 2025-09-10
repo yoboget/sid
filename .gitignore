@@ -13,6 +13,9 @@
 # Compiled Java class files
 *.class
 
+# Orca files
+*orca*
+
 
 # Package files
 *.jar
