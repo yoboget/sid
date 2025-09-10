@@ -20,7 +20,7 @@ warnings.filterwarnings("ignore", category=FutureWarning)
 
 PRINT_TIME = False
 # -------- the relative path to the orca dir --------
-ORCA_DIR = 'evaluation/orca'
+ORCA_DIR = 'eval/orca'
 
 
 ##### code adapted from https://github.com/KarolisMart/SPECTRE/blob/main/util/eval_helper.py
