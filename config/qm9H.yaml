@@ -1,6 +1,6 @@
 
 data:
-  max_num_nodes: 9
+  max_num_nodes: 29
 
 training:
   batch_size: 256
