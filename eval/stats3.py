@@ -26,18 +26,6 @@ ORCA_DIR = './eval/orca'
 ##### code adapted from https://github.com/KarolisMart/SPECTRE/blob/main/util/eval_helper.py
 ##### and further adapted from https://github.com/harryjo97/GruM/blob/master/GruM_2D/evaluation/stats.py
 
-def edge_list_reindexed(G):
-    idx = 0
-    id2idx = dict()
-    for u in G.nodes():
-        id2idx[str(u)] = idx
-        idx += 1
-
-    edges = []
-    for u, v in G.edges():
-        edges.append((id2idx[str(u)], id2idx[str(v)]))
-    return edges
-
 def degree_worker(G):
     return np.array(nx.degree_histogram(G))
 
@@ -203,6 +191,17 @@ motif_to_indices = {
 }
 COUNT_START_STR = 'orbit counts: \n'
 
+def edge_list_reindexed(G):
+    idx = 0
+    id2idx = dict()
+    for u in G.nodes():
+        id2idx[str(u)] = idx
+        idx += 1
+
+    edges = []
+    for u, v in G.edges():
+        edges.append((id2idx[str(u)], id2idx[str(v)]))
+    return edges
 
 def orca(graph):
     # tmp_fname = f'analysis/orca/tmp_{"".join(secrets.choice(ascii_uppercase + digits) for i in range(8))}.txt'
