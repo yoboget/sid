@@ -217,14 +217,26 @@ def orca(graph):
     f.close()
 
     output = sp.check_output([os.path.join(ORCA_DIR, 'orca'), 'node', '4', tmp_file_path, 'std'])
+    # output = sp.check_output([os.path.join(ORCA_DIR), 'node', '4', tmp_file_path, 'std'])
+    # print(output)
     output = output.decode('utf8').strip()
 
-    idx = output.find(COUNT_START_STR) + len(COUNT_START_STR)
+    idx = output.find(COUNT_START_STR) + len(COUNT_START_STR) + 2
     output = output[idx:]
-    print('output', output)
     node_orbit_counts = np.array([list(map(int, node_cnts.strip().split(' ')))
                                   for node_cnts in output.strip('\n').split('\n')])
-    print('node', node_orbit_counts)
+
+
+
+    # output = sp.check_output([os.path.join(ORCA_DIR, 'orca'), 'node', '4', tmp_file_path, 'std'])
+    # output = output.decode('utf8').strip()
+    #
+    # idx = output.find(COUNT_START_STR) + len(COUNT_START_STR)
+    # output = output[idx:]
+    # print('output', output)
+    # node_orbit_counts = np.array([list(map(int, node_cnts.strip().split(' ')))
+    #                               for node_cnts in output.strip('\n').split('\n')])
+    # print('node', node_orbit_counts)
 
     try:
         print(tmp_file_path)
