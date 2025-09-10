@@ -209,6 +209,7 @@ def orca(graph):
     tmp_file_path = os.path.join(ORCA_DIR,
                                  f'tmp_{"".join(secrets.choice(ascii_uppercase + digits) for i in range(8))}.txt')
     print('path1', tmp_file_path)
+    print(graph.number_of_nodes())
     f = open(tmp_file_path, 'w')
     f.write(str(graph.number_of_nodes()) + ' ' + str(graph.number_of_edges()) + '\n')
     for (u, v) in edge_list_reindexed(graph):
