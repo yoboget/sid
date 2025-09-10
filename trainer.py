@@ -347,7 +347,7 @@ class Trainer:
 
     def save_model(self,  to_save, metrics, loss, ema=False):
         if metrics is not None:
-            if self.dataset in ['zinc', 'qm9', 'qm9_cc', 'qm9_dg']:
+            if self.dataset in ['zinc', 'qm9', 'qm9_cc', 'qm9_dg', 'qm9H']:
                 ref_metric_name = 'nspdk'
                 ref_metric_name_save = 'nspdk'
                 if ema: ref_metric_name_save += '_ema'
