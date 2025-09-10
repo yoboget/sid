@@ -218,35 +218,38 @@ def orca(graph):
     print('path2', os.path.join(ORCA_DIR))
     print(os.path.isfile(os.path.join(ORCA_DIR, 'orca')))
     print(os.access(os.path.join(ORCA_DIR, 'orca'), os.X_OK))
-    # output = sp.check_output([os.path.join(ORCA_DIR, 'orca'), 'node', '4', tmp_file_path, 'std'])
-    output = sp.run([os.path.join(ORCA_DIR), 'node', '4', tmp_file_path, 'std'], check=False).stdout
+    output = sp.check_output([os.path.join(ORCA_DIR, 'orca'), 'node', '4', tmp_file_path, 'std'])
+    # output = sp.run([os.path.join(ORCA_DIR), 'node', '4', tmp_file_path, 'std'], check=False).stdout
     # output = sp.check_output([os.path.join(ORCA_DIR), 'node', '4', tmp_file_path, 'std'])
     print(output)
-    output = output.decode('utf8').strip()
+    if output is not None:
+        output = output.decode('utf8').strip()
 
-    idx = output.find(COUNT_START_STR) + len(COUNT_START_STR) + 2
-    output = output[idx:]
-    node_orbit_counts = np.array([list(map(int, node_cnts.strip().split(' ')))
-                                  for node_cnts in output.strip('\n').split('\n')])
+        idx = output.find(COUNT_START_STR) + len(COUNT_START_STR) + 2
+        output = output[idx:]
+        node_orbit_counts = np.array([list(map(int, node_cnts.strip().split(' ')))
+                                      for node_cnts in output.strip('\n').split('\n')])
 
 
 
-    # output = sp.check_output([os.path.join(ORCA_DIR, 'orca'), 'node', '4', tmp_file_path, 'std'])
-    # output = output.decode('utf8').strip()
-    #
-    # idx = output.find(COUNT_START_STR) + len(COUNT_START_STR)
-    # output = output[idx:]
-    # print('output', output)
-    # node_orbit_counts = np.array([list(map(int, node_cnts.strip().split(' ')))
-    #                               for node_cnts in output.strip('\n').split('\n')])
-    # print('node', node_orbit_counts)
+        # output = sp.check_output([os.path.join(ORCA_DIR, 'orca'), 'node', '4', tmp_file_path, 'std'])
+        # output = output.decode('utf8').strip()
+        #
+        # idx = output.find(COUNT_START_STR) + len(COUNT_START_STR)
+        # output = output[idx:]
+        # print('output', output)
+        # node_orbit_counts = np.array([list(map(int, node_cnts.strip().split(' ')))
+        #                               for node_cnts in output.strip('\n').split('\n')])
+        # print('node', node_orbit_counts)
 
-    try:
-        print('2', tmp_file_path)
-        os.remove(tmp_file_path)
-    except OSError:
-        print('error')
-        pass
+        try:
+            print('2', tmp_file_path)
+            os.remove(tmp_file_path)
+        except OSError:
+            print('error')
+            pass
+    else:
+        node_orbit_counts = 0
 
     return node_orbit_counts
 
