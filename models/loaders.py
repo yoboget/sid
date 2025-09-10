@@ -39,7 +39,10 @@ def load_denoiser(config, loader, extra_features, device, prior,
     print(f'Number of parameters in the encoder: {n_params}')
 
     if denoiser_dir is not None:
-        filename = 'best_run_avg_ema.pt'
+        if config.dataset in ['qm9', 'qm9_cc', 'zinc', 'qm9H']:
+            filename = 'best_run_fcd_ema.pt'
+        else:
+            filename = 'best_run_avg_ema.pt'
         # filename = 'best_run_nspdk_ema.pt'
         denoiser = load_trained_model(denoiser, 'denoiser', denoiser_dir, filename, device)
 
