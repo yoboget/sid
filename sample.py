@@ -64,6 +64,7 @@ class Sampler:
                 raise NotImplementedError ('Sampling method not implemented.')
             if (i + 1) % 100 == 0:
                 print(f'{i + 1} timesteps done. Sampling resumes...')
+        print('Sampling finished.')
         return x_t, a_t, mask.bool(), mask_adj.bool().squeeze()
 
     def flow_matching_step(self, x_t, a_t, t, delta_t, masks):
@@ -102,12 +103,13 @@ class Sampler:
         #     pa_s = pa_s * guid_a
 
         # print(va[0, 1, 0]*delta_t, a_t[0, 1, 0])
-        if t + delta_t < 1:
-            px_s = px_s / px_s.sum(-1, keepdim=True)
-            pa_s = pa_s / pa_s.sum(-1, keepdim=True)
-            x_s, a_s = self.sample_ps(px_s, pa_s, masks)
-        else:
-            x_s, a_s = px_s.argmax(-1) * mask, pa_s.argmax(-1) * mask_adj
+
+        px_s = px_s / px_s.sum(-1, keepdim=True)
+        pa_s = pa_s / pa_s.sum(-1, keepdim=True)
+        x_s, a_s = self.sample_ps(px_s, pa_s, masks)
+
+        if t + delta_t == 1:
+            x_s, a_s = x_s.argmax(-1) * mask, a_s.argmax(-1) * mask_adj
             x_s, a_s = x_s.int(), a_s.int()
         return x_s, a_s
 
