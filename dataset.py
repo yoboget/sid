@@ -15,8 +15,6 @@ def get_dataset(config):
     if config.dataset == 'qm9H':
         transforms = Qm9HTransform()
         data = QM9_(f'./data/qm9H', pre_transform=transforms)
-        SEED = 42
-        torch.manual_seed(SEED)
         idx = torch.randperm(len(data))
         train_idx, test_idx = idx[10000:], idx[:10000]
         train_idx, val_idx = train_idx[config.training.val_size:], train_idx[:config.training.val_size]
@@ -37,8 +35,6 @@ def get_dataset(config):
         transforms = Qm9ConditionalTransform()
         data = QM9_(f'./data/qm9_cc', pre_transform=transforms)
         SEED = 42
-        torch.manual_seed(SEED)
-        idx = torch.randperm(len(data))
         train_idx, test_idx = idx[10000:], idx[:10000]
         train_idx, val_idx = train_idx[config.log.n_val_samples:], train_idx[:config.log.n_val_samples]
         train, val, test = data[train_idx], data[test_idx], data[val_idx]
