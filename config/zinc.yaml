@@ -33,7 +33,7 @@ extra_features:
   cycles: False
 
 sampling:
-  id: 'dfm'
+  id: 'sid'
   critical: False
 
 log:
