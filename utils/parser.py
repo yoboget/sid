@@ -6,7 +6,7 @@ def parse_args():
     parser = argparse.ArgumentParser()
     parser.add_argument(
         "--dataset", type=str,
-        default='qm9H',
+        default='zinc',
         help="Name of the dataset. Available:  qm9, zinc, planar, sbm"
     )
 
