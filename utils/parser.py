@@ -30,7 +30,7 @@ def parse_args():
 
     parser.add_argument(
         "--denoiser_dir", type=str,
-        default='./wandb/run-20250910_095326-uwgd21ke/files/', help="Path to the model directory"
+        default='./wandb/run-20250906_175441-z6181ye0/files/', help="Path to the model directory"
     )
 
     parser.add_argument(
