@@ -44,7 +44,8 @@ class DenseGNN(nn.Module):
                 self.node_norm = nn.BatchNorm1d(nhf)
 
             elif self.normalization == 'layer_norm':
-                self.edge_norm = nn.LayerNorm(int(nhf / fact))
+                # self.edge_norm = nn.LayerNorm(int(nhf / fact))
+                self.edge_norm = nn.LayerNorm(nef_out)
                 self.node_norm = nn.LayerNorm(nhf)
 
             elif self.normalization == 'graph_norm':
@@ -77,7 +78,7 @@ class DenseGNN(nn.Module):
                 X = self.node_norm(X.permute(0, 2, 1)).permute(0, 2, 1)
             else:
                 X = self.node_norm(X)
-                A = self.edge_norm(A)
+                # A = self.edge_norm(A)
 
         X = self.linear_out_x(X)
         A = self.linear_out_e(A)
