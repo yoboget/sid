@@ -20,7 +20,7 @@ model:
   n_layers: 8
   mlp_n_layers: 3
   normalization: layer_norm
-  T: 128
+  T: 1024
   prior: marginal # 'masking', 'absorbing', 'marginal'
   input_time: True
   predict_all: True
@@ -33,7 +33,7 @@ extra_features:
   cycles: False
 
 sampling:
-  id: 'sid'
+  id: 'dif'
   critical: False
 
 log:
