@@ -92,7 +92,7 @@ class SamplingMetrics:
         return metrics
 
     def generic_graph_metrics(self, gen_graphs, dataset):
-        metrics = eval_graph_list(self.ref_graphs, gen_graphs, methods=['degree', 'cluster', 'orbit','spectral'])
+        metrics = eval_graph_list(self.ref_graphs, gen_graphs, methods=['degree', 'cluster', 'spectral'])
         avg = sum(metrics.values()) / len(metrics.values())
         metrics['avg'] = avg
         if dataset == 'planar':
