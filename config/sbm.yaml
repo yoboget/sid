@@ -3,10 +3,10 @@ data:
   max_num_nodes: 200
 
 training:
-  batch_size: 8
-  learning_rate: 0.0001
+  batch_size: 16
+  learning_rate: 0.0002
   lr_decay: 0.5
-  decay_iteration: 100000
+  decay_iteration: 2_000_000
   betas:
     beta1: 0.9
     beta2: 0.999
@@ -17,10 +17,10 @@ training:
 model:
   nhf: 256
   edge_node_ratio: 4
-  n_layers: 4
+  n_layers: 8
   mlp_n_layers: 3
   normalization: layer_norm
-  T: 512
+  T: 256
   prior: marginal # 'masking', 'absorbing', 'marginal'
   input_time: True
   predict_all: True
@@ -36,14 +36,14 @@ extra_features:
   cycles: False
 
 sampling:
-  id: True
+  id: 'sid'
   critical: False
 
 log:
   n_loggin_steps: 1000
   n_loggin_epochs: 500
   n_test_samples: 40
-  n_val_samples: 16
+  n_val_samples: 32
   sampling_batch_size: 40
   n_samples_generation: 40
   save_graphs: False
