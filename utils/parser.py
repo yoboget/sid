@@ -12,7 +12,7 @@ def parse_args():
 
     parser.add_argument(
         "--work_type", type=str,
-        default='train', help="Options: train or sample"
+        default='sample', help="Options: train or sample"
     )
 
     parser.add_argument(
@@ -30,7 +30,7 @@ def parse_args():
 
     parser.add_argument(
         "--denoiser_dir", type=str,
-        default=None, help="Path to the model directory"
+        default='./wandb/run-20250922_103556-avxsrecv/files/', help="Path to the model directory"
     )
 
     parser.add_argument(

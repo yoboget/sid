@@ -100,11 +100,10 @@ class SamplingMetrics:
                                                                 validity_func=is_planar_graph)
             metrics['unique'], metrics['novel'], metrics['valid'] = u, n, v
             # plot_batch_networkx_graphs(gen_graphs[:30], filename='./misc/plots/plan_gen')
-        # elif dataset == 'sbm':
-        #     u, n, v = eval_fraction_unique_non_isomorphic_valid(gen_graphs, self.test_graphs,
-        #                                                         validity_func=is_sbm_graph)
-        #     metrics['unique'], metrics['novel'], metrics['valid'] = u, n, v
-        #     # plot_batch_networkx_graphs(gen_graphs[:4])
+        elif dataset == 'sbm':
+            u, n, v = eval_fraction_unique_non_isomorphic_valid(gen_graphs, self.test_graphs,
+                                                                validity_func=is_sbm_graph)
+            metrics['unique'], metrics['novel'], metrics['valid'] = u, n, v
         return metrics
 
 
