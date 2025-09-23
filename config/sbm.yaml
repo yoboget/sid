@@ -36,7 +36,7 @@ extra_features:
   cycles: False
 
 sampling:
-  id: 'sid'
+  id: 'dif'
   critical: False
 
 log:
