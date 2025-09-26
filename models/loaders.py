@@ -3,6 +3,7 @@ import torch
 from torch import optim
 from models.nn import Mlp
 from models.models import DenseGNN, DenseGNN3,NodePredictor
+from models.digress_model import GraphTransformer
 
 
 
@@ -29,8 +30,11 @@ def load_denoiser(config, loader, extra_features, device, prior,
     # --- Denoiser ---
     print("Loading Denoiser...")
     print(input_sizes)
-    denoiser = DenseGNN(config, *input_sizes, *output_sizes, hidden_size,
-                        norm_out=True).to(device)
+    if config.model.architecture == 'digress':
+        denoiser = GraphTransformer(config, *input_sizes, *output_sizes, hidden_size).to(device)
+    else:
+        denoiser = DenseGNN(config, *input_sizes, *output_sizes, hidden_size,
+                            norm_out=True).to(device)
     params = list(denoiser.parameters())
     betas = config.training.betas.beta1, config.training.betas.beta2
     opt = optim.Adam(params, lr=config.training.learning_rate, betas=betas)

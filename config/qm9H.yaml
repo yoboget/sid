@@ -3,7 +3,7 @@ data:
   max_num_nodes: 29
 
 training:
-  batch_size: 256
+  batch_size: 128
   learning_rate: 0.0002
   lr_decay: 0.5
   decay_iteration: 1_000_000
@@ -15,6 +15,7 @@ training:
   #dropout: 0
 
 model:
+  architecture: 'digress'
   nhf: 256
   edge_node_ratio: 4
   n_layers: 8
