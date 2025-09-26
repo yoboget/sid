@@ -321,7 +321,8 @@ class Trainer:
         if X.size(-1) > 1:
             loss_x = F.binary_cross_entropy(x_pred[mask].sigmoid(), targ_x)
             n, m = x_pred[mask].size(0), a_pred[adj_mask].size(0)
-            loss = (n / (m + n)) * loss_x + (m / (m + n)) * loss_a
+            # loss = (n / (m + n)) * loss_x + (m / (m + n)) * loss_a
+            loss = loss_x + 5 * loss_a
         else:
             loss_x = torch.zeros(1, dtype=x_pred.dtype, device=x_pred.device)
             loss = loss_a
