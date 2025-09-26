@@ -15,6 +15,7 @@ training:
   #dropout: 0
 
 model:
+  architecture: 'digress'
   nhf: 256
   edge_node_ratio: 4
   n_layers: 8
@@ -25,14 +26,15 @@ model:
   ema: True
 
 extra_features:
-  spectral_embeddings: True
-  k: 5
+  spectral_embeddings: False
+  k: 0
   graph_size: True
-  molecular_feat: True
+  molecular_feat: False
   cycles: False
+  rrwp: True
 
 sampling:
-  id: True
+  id: 'sid'
   critical: False
 
 regressor:

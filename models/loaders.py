@@ -37,7 +37,8 @@ def load_denoiser(config, loader, extra_features, device, prior,
                             norm_out=True).to(device)
     params = list(denoiser.parameters())
     betas = config.training.betas.beta1, config.training.betas.beta2
-    opt = optim.Adam(params, lr=config.training.learning_rate, betas=betas)
+    # opt = optim.AdamW(params, lr=config.training.learning_rate, betas=betas)
+    opt = optim.AdamW(params, lr=config.training.learning_rate, amsgrad=True, weight_decay=10e-12)
     scheduler = optim.lr_scheduler.ExponentialLR(opt, config.training.lr_decay)
     n_params = sum(p.numel() for p in denoiser.parameters() if p.requires_grad)
     print(f'Number of parameters in the encoder: {n_params}')
