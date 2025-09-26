@@ -20,7 +20,7 @@ model:
   n_layers: 8
   mlp_n_layers: 3
   normalization: layer_norm
-  T: 1024
+  T: 128
   prior: marginal # 'masking', 'absorbing', 'marginal'
   ema: True
 
