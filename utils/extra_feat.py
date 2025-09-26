@@ -10,7 +10,7 @@ class ExtraFeatures:
         self.molecular_feat = config.extra_features.molecular_feat
         self.cycles = config.extra_features.cycles
         self.rrwp = config.extra_features.rrwp
-        self.n_features = 2 * self.k + self.graph_size + 10 * self.rrwp + 2 * self.molecular_feat + 3 * self.cycles
+        self.n_features = 2 * self.k + self.graph_size + 5 * self.rrwp + 2 * self.molecular_feat + 3 * self.cycles
         POSITIONAL = False
 
         self.pos = POSITIONAL
@@ -79,7 +79,7 @@ class ExtraFeatures:
 
         if self.rrwp:
             A_ = A[..., 1:].sum(-1)  # bs, n, n
-            rrwp_edge_attr = self.get_rrwp(A_, k=10)
+            rrwp_edge_attr = self.get_rrwp(A_, k=5)
             diag_index = torch.arange(rrwp_edge_attr.shape[1])
             rrwp_node_attr = rrwp_edge_attr[:, diag_index, diag_index, :]
 
