@@ -216,7 +216,8 @@ class Trainer:
             n, m = X_targ.size(0), A_targ.size(0)
 
             loss_a = F.cross_entropy(A_pred, A_targ)
-            loss = (n / (m + n)) * loss_x + (m / (m + n)) * loss_a
+            # loss = (n / (m + n)) * loss_x + (m / (m + n)) * loss_a
+            loss = loss_x + 5 * loss_a
 
         else:
             A_targ = A_targ[..., :1]
