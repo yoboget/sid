@@ -16,6 +16,13 @@ def main() -> None:
     work_type = args.work_type
     dataset = args.dataset
 
+    if args.wandb == 'no':
+        args.wandb = 'disabled'
+    elif args.wandb == 'on':
+        args.wandb = 'online'
+    elif args.wandb == 'off':
+        args.wandb = 'offline'
+
     config_path = f'./config/{dataset}.yaml'
     config = yaml.load(open(config_path, 'r'), Loader=yaml.FullLoader)
     config = edict(config)
