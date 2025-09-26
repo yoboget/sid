@@ -25,11 +25,12 @@ model:
   ema: True
 
 extra_features:
-  spectral_embeddings: True
-  k: 5
+  spectral_embeddings: False
+  k: 0
   graph_size: True
-  molecular_feat: True
+  molecular_feat: False
   cycles: False
+  rrwp: True
 
 sampling:
   id: 'dfm'

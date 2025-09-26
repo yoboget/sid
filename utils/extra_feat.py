@@ -9,7 +9,8 @@ class ExtraFeatures:
         self.k = config.extra_features.k
         self.molecular_feat = config.extra_features.molecular_feat
         self.cycles = config.extra_features.cycles
-        self.n_features = 2 * self.k + self.graph_size
+        self.rrwp = config.extra_features.rrwp
+        self.n_features = 2 * self.k + self.graph_size + 10 * self.rrwp + 2 * self.molecular_feat + 3 * self.cycles
         POSITIONAL = False
 
         self.pos = POSITIONAL
@@ -76,9 +77,42 @@ class ExtraFeatures:
             pos_emb = pos_emb.unsqueeze(0).repeat(X.shape[0], 1).unsqueeze(-1)
             X_feat = torch.cat((X_feat, pos_emb, 1-pos_emb), dim=-1)
 
+        if self.rrwp:
+            A_ = A[..., 1:].sum(-1)  # bs, n, n
+            rrwp_edge_attr = self.get_rrwp(A_, k=10)
+            diag_index = torch.arange(rrwp_edge_attr.shape[1])
+            rrwp_node_attr = rrwp_edge_attr[:, diag_index, diag_index, :]
+
+            A_feat = torch.cat((A_feat, rrwp_edge_attr), dim=-1)
+            X_feat = torch.cat((X_feat, rrwp_node_attr), dim=-1)
+
         X = torch.cat((X, X_feat), dim=-1) if X is not None else X_feat
         A = torch.cat((A, A_feat), dim=-1)
         return X, A
+
+    def get_rrwp(self, A, k=10):
+        """
+        A : Adjacency matrix (bs, n, n)
+        k : number of steps for the random walk
+        returns:
+            rrwp_edge_attr : (bs, n, n, k) -- edge features corresponding to the random walk probabilities up to step k
+        """
+        bs, n, _ = A.shape
+
+        degree = torch.zeros(bs, n, n, device=A.device)
+        to_fill = 1 / (A.sum(dim=-1).float())
+        to_fill[A.sum(dim=-1).float() == 0] = 0
+        degree = torch.diagonal_scatter(degree, to_fill, dim1=1, dim2=2)
+        A = degree @ A
+
+        id = torch.eye(n, device=A.device).unsqueeze(0).repeat(bs, 1, 1)
+        rrwp_list = [id]
+
+        for i in range(k - 1):
+            cur_rrwp = rrwp_list[-1] @ A
+            rrwp_list.append(cur_rrwp)
+
+        return torch.stack(rrwp_list, -1)
 
     def eigen_features_dense(self, adjs, mask):
 

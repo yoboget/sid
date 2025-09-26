@@ -75,6 +75,9 @@ def get_input_sizes(config, loader, extra_features, prior, denoiser=True):
             nnf_in += 1
             nnf_in += 1
 
+        if extra_features.rrwp:
+            nef_in += 10
+
         nnf_out = n_node_attr
         nef_out = n_edge_attr
         if n_node_attr > 1:
