@@ -17,7 +17,7 @@ training:
 model:
   architecture: 'digress'
   nhf: 256
-  edge_node_ratio: 1
+  edge_node_ratio: 4
   n_layers: 8
   mlp_n_layers: 3
   normalization: layer_norm
