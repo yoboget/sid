@@ -15,7 +15,7 @@ training:
   #dropout: 0
 
 model:
-  architecture: 'digress'
+  architecture: 'GPS'
   nhf: 256
   edge_node_ratio: 4
   n_layers: 8
