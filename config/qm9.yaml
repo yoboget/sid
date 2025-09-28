@@ -3,7 +3,7 @@ data:
   max_num_nodes: 9
 
 training:
-  batch_size: 512
+  batch_size: 1024
   learning_rate: 0.0002
   lr_decay: 0.5
   decay_iteration: 1_000_000
@@ -15,9 +15,9 @@ training:
   #dropout: 0
 
 model:
-  architecture: 'GPS'
+  architecture: 'digress'
   nhf: 256
-  edge_node_ratio: 4
+  edge_node_ratio: 1
   n_layers: 8
   mlp_n_layers: 3
   normalization: layer_norm
