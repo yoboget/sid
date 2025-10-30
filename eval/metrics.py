@@ -84,8 +84,8 @@ class SamplingMetrics:
             for k, v in zip(('mol_weight', 'logP', 'QED'), conditional_mae):
                 conditional_metrics[k] = v.item()
 
-        train_smiles, test_smiles = load_smiles(dataset=dataset)
-        results = get_all_metrics(gen_mols, test=test_smiles, train=train_smiles)
+        # train_smiles, test_smiles = load_smiles(dataset=dataset)
+        # results = get_all_metrics(gen_mols, test=test_smiles, train=train_smiles)
         metrics = mol_metric(gen_mols, dataset, num_no_correct, test_metrics=True)
         if conditional and conditional_values is not None:
             metrics = metrics | conditional_metrics

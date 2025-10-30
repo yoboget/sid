@@ -218,7 +218,17 @@ def gen_mol(x, adj, mask, dataset, largest_connected_comp=True):
         cmol, no_correct = correct_mol(mol)
         if no_correct:
             num_no_correct += 1
-        vcmol = valid_mol_can_with_seg(cmol, largest_connected_comp=largest_connected_comp)
+        if dataset == 'qm9H':
+            # For consistency with other models used only with explicit H
+            # Without explicit H, valid_mol_can_with_seg has the same effect
+            try:
+                mol_frags = Chem.rdmolops.GetMolFrags(cmol, asMols=True, sanitizeFrags=True)
+                vcmol = max(mol_frags, default=cmol, key=lambda m: m.GetNumAtoms())
+            except:
+                vcmol = cmol
+        else:
+            vcmol = valid_mol_can_with_seg(cmol, largest_connected_comp=largest_connected_comp)
+
         mols.append(vcmol)
 
     mols = [mol for mol in mols if mol is not None]
@@ -232,9 +242,7 @@ def gen_mol_no_corr(x, adj, dataset):
 
     if dataset == 'qm9':
         atomic_num_list = [6, 7, 8, 9, 0]
-    elif dataset == 'qm9_conditional':
-        atomic_num_list = [1, 6, 7, 8, 9, 0]
-    elif dataset == ['qm9_cc','qm9_dg', 'qm9H']:
+    elif dataset == ['qm9_cc', 'qm9H']:
         atomic_num_list = [1, 6, 7, 8, 9, 0]
     else:
         atomic_num_list = [6, 7, 8, 9, 15, 16, 17, 35, 53, 0]
