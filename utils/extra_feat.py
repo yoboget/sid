@@ -80,7 +80,7 @@ class ExtraFeatures:
 
         if self.rrwp:
             A_ = A[..., 1:].sum(-1)  # bs, n, n
-            rrwp_edge_attr = self.get_rrwp(A_, k=5)
+            rrwp_edge_attr = self.get_rrwp(A_, k=self.rrwp_k)
             diag_index = torch.arange(rrwp_edge_attr.shape[1])
             rrwp_node_attr = rrwp_edge_attr[:, diag_index, diag_index, :]
 

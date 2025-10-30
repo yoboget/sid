@@ -3,7 +3,7 @@ data:
   max_num_nodes: 9
 
 training:
-  batch_size: 1024
+  batch_size: 2048
   learning_rate: 0.0002
   lr_decay: 0.5
   decay_iteration: 1_000_000
@@ -21,7 +21,7 @@ model:
   n_layers: 8
   mlp_n_layers: 3
   normalization: layer_norm
-  T: 128
+  T: 256
   prior: marginal # 'masking', 'absorbing', 'marginal'
   ema: True
 
@@ -31,8 +31,8 @@ extra_features:
   graph_size: True
   molecular_feat: False
   cycles: False
-  rrwp: True
-  rrwp_k: 5
+  rrwp: False
+  rrwp_k: 0
 
 sampling:
   id: 'sid'
@@ -43,8 +43,8 @@ regressor:
 
 log:
   n_loggin_steps: 1000
-  n_loggin_epochs: 5
+  n_loggin_epochs: 20
   n_val_samples: 1000
-  sampling_batch_size: 1000
-  n_samples_generation: 1000
+  sampling_batch_size: 10000
+  n_samples_generation: 10000
   save_graphs: False

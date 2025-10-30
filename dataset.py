@@ -2,8 +2,8 @@ import os
 import json
 import torch
 import pickle
+import random
 from torch_geometric.loader import DataLoader
-from torch_geometric.datasets import QM9
 from utils.utils import batch_to_networkx
 
 from transforms import Qm9Transform, Qm9ConditionalTransform, Qm9DiscreteGuidanceTransform, Qm9HTransform
@@ -24,11 +24,11 @@ def get_dataset(config):
     elif config.dataset == 'qm9':
         transforms = Qm9Transform()
         data = KekulizedMolDataset(f'./data/qm9/', dataset='qm9', pre_transform=transforms)
-        train_idx, test_idx = get_indices(config, 'qm9', len(data))
-        perm = torch.randperm(len(train_idx))
-        train_idx = train_idx[perm]
-        train_idx, val_idx = train_idx[config.training.val_size:], train_idx[:config.training.val_size]
-        train, val, test = data[train_idx], data[test_idx], data[val_idx]
+        original_train_idx, test_idx = get_indices(config, 'qm9', len(data))
+        random.shuffle(original_train_idx)
+        val_idx = original_train_idx[:config.log.n_val_samples]
+        train_idx = original_train_idx[config.log.n_val_samples:]
+        train, test, val = data[train_idx], data[test_idx], data[val_idx]
         test_size = 10_000
 
     elif config.dataset == 'qm9_cc':
