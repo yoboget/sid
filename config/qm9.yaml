@@ -31,8 +31,8 @@ extra_features:
   graph_size: True
   molecular_feat: False
   cycles: False
-  rrwp: False
-  rrwp_k: 0
+  rrwp: True
+  rrwp_k: 5
 
 sampling:
   id: 'sid'
