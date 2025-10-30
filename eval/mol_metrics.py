@@ -131,6 +131,9 @@ def mol_metric(gen_mols, dataset, num_no_correct, test_metrics=False):
         if dataset == 'qm9_conditional' or dataset == 'qm9_cc' or dataset== 'qm9_dg':
             dataset = 'qm9'
         train_smiles, test_smiles = load_smiles(dataset=dataset)
+        test_smiles = canonicalize_smiles(test_smiles)
+        train_smiles = canonicalize_smiles(train_smiles)
+
         if len(gen_valid) > 0:
             metrics['novel'] = novelty(gen_valid, train_smiles)
         else:
