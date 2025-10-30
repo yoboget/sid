@@ -141,7 +141,7 @@ def mol_metric(gen_mols, dataset, num_no_correct, test_metrics=False):
             random.Random(42).shuffle(test_graph_list)
 
         if len(gen_mols) > 0:
-            metrics['nspdk'] = eval_graph_list(test_graph_list[:n], mols_to_nx(gen_mols), methods=['nspdk'])['nspdk']
+            metrics['nspdk'] = eval_graph_list(test_graph_list, mols_to_nx(gen_mols), methods=['nspdk'])['nspdk']
         else:
             metrics['nspdk'] = 1
 
