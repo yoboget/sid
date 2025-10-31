@@ -25,6 +25,7 @@ model:
   prior: marginal # 'masking', 'absorbing', 'marginal'
   ema: True
 
+        # vcmol = valid_mol_can_with_seg(cmol, largest_connected_comp=largest_connected_comp)
 extra_features:
   spectral_embeddings: False
   k: 0

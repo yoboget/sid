@@ -4,7 +4,7 @@ data:
 
 training:
   batch_size: 2048
-  learning_rate: 0.0002
+  learning_rate: 0.0005
   lr_decay: 0.5
   decay_iteration: 1_000_000
   betas:
