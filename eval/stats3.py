@@ -562,7 +562,7 @@ def eval_graph_list(graph_ref_list, graph_pred_list, methods=None, kernels=None)
     if methods is None:
         methods = ['degree', 'cluster', 'orbit', 'spectral']
     results = {}
-    NUM = 4
+    NUM = 6
     for method in methods:
         if 'eval' in method:  # sbm, planar
             uniq, uniq_non_iso, uniq_non_iso_val = METHOD_NAME_TO_FUNC[method](graph_ref_list, graph_pred_list)
@@ -579,6 +579,7 @@ def eval_graph_list(graph_ref_list, graph_pred_list, methods=None, kernels=None)
                 result = METHOD_NAME_TO_FUNC[method](graph_ref_list, graph_pred_list)
             else:
                 result = METHOD_NAME_TO_FUNC[method](graph_ref_list, graph_pred_list)
+            print(result)
             results[method] = round(result, NUM)
             print(f'{method:10s}' + ' : ' + f'{results[method]:.6f}')
     return results
