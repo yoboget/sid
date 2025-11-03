@@ -568,17 +568,17 @@ def eval_graph_list(graph_ref_list, graph_pred_list, methods=None, kernels=None)
             uniq, uniq_non_iso, uniq_non_iso_val = METHOD_NAME_TO_FUNC[method](graph_ref_list, graph_pred_list)
             if uniq < 0.999:
                 results['unique'] = round(uniq, NUM)
-                print(f'{"unique":10s}' + ' : ' + f'{results["unique"]:.4f}')
+                print(f'{"unique":10s}' + ' : ' + f'{results["unique"]:.6f}')
             if uniq_non_iso < 0.999:
                 results['uniq+nov'] = round(uniq_non_iso, NUM)
-                print(f'{"uniq+nov":10s}' + ' : ' + f'{results["uniq+nov"]:.4f}')
+                print(f'{"uniq+nov":10s}' + ' : ' + f'{results["uniq+nov"]:.6f}')
             results['V.U.N.'] = round(uniq_non_iso_val, NUM)
-            print(f'{"V.U.N.":10s}' + ' : ' + f'{results["V.U.N."]:.4f}')
+            print(f'{"V.U.N.":10s}' + ' : ' + f'{results["V.U.N."]:.6f}')
         else:
             if method in ['degree', 'cluster', 'orbit', 'spectral']:  # MMD requires kernel
                 result = METHOD_NAME_TO_FUNC[method](graph_ref_list, graph_pred_list)
             else:
                 result = METHOD_NAME_TO_FUNC[method](graph_ref_list, graph_pred_list)
             results[method] = round(result, NUM)
-            print(f'{method:10s}' + ' : ' + f'{results[method]:.4f}')
+            print(f'{method:10s}' + ' : ' + f'{results[method]:.6f}')
     return results
