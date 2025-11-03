@@ -12,11 +12,11 @@ def parse_args():
 
     parser.add_argument(
         "--work_type", type=str,
-        default='train', help="Options: train or sample"
+        default='sample', help="Options: train or sample"
     )
 
     parser.add_argument(
-        "--train_model", type=bool, default=True, help="Whether to train model"
+        "--train_model", type=bool, default=False, help="Whether to train model"
     )
 
     parser.add_argument(
@@ -30,7 +30,7 @@ def parse_args():
 
     parser.add_argument(
         "--denoiser_dir", type=str,
-        default=None, help="Path to the model directory"
+        default='./wandb/run-20251031_120112-ss4x1xlb/files/', help="Path to the model directory"
     )
 
     parser.add_argument(
