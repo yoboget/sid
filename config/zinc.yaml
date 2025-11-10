@@ -15,6 +15,7 @@ training:
   #dropout: 0
 
 model:
+  architecture: 'GPS'
   nhf: 256
   edge_node_ratio: 2
   n_layers: 8
