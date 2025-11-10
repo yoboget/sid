@@ -95,14 +95,6 @@ class Sampler:
 
         px_s = x_t + delta_t * vx
         pa_s = a_t + delta_t * va
-        # if self.classifier_guidance:
-        #     omega = -1000
-        #     guid_x, guid_a = self.get_classifier_guidance(x_t, a_t, mask, t, omega)
-        #     # guid_x, guid_a = self.get_classifier_guidance(px_s, pa_s, mask, t, omega)
-        #     px_s = px_s * guid_x
-        #     pa_s = pa_s * guid_a
-
-        # print(va[0, 1, 0]*delta_t, a_t[0, 1, 0])
 
         px_s = px_s / px_s.sum(-1, keepdim=True)
         pa_s = pa_s / pa_s.sum(-1, keepdim=True)

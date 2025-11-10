@@ -3,7 +3,7 @@ data:
   max_num_nodes: 29
 
 training:
-  batch_size: 512
+  batch_size: 128
   learning_rate: 0.0005
   lr_decay: 0.5
   decay_iteration: 1_000_000
@@ -43,7 +43,7 @@ regressor:
   denoiser: False
 
 log:
-  n_loggin_steps: 1000
+  n_loggin_steps: 100
   n_loggin_epochs: 5
   n_val_samples: 1000
   sampling_batch_size: 1000
