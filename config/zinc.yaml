@@ -4,9 +4,9 @@ data:
 
 training:
   batch_size: 256
-  learning_rate: 0.0001
+  learning_rate: 0.0005
   lr_decay: 0.5
-  decay_iteration: 100_000
+  decay_iteration: 1_000_000
   betas:
     beta1: 0.9
     beta2: 0.999
@@ -16,11 +16,11 @@ training:
 
 model:
   nhf: 256
-  edge_node_ratio: 4
+  edge_node_ratio: 2
   n_layers: 8
   mlp_n_layers: 3
   normalization: layer_norm
-  T: 1024
+  T: 128
   prior: marginal # 'masking', 'absorbing', 'marginal'
   input_time: True
   predict_all: True
