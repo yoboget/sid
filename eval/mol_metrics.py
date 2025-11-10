@@ -191,7 +191,7 @@ def load_smiles(dataset='qm9'):
             col = 'smiles'
         else:
             raise ValueError('wrong dataset name in load_smiles')
-
+        print(dataset)
         df = pd.read_csv(f'./data/{dataset}/raw/smiles_{dataset}.csv')
 
         with open(f'./data/{dataset}/raw/test_idx_{dataset}.json') as f:

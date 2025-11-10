@@ -9,6 +9,22 @@ import numpy as np
 
 from utils.parser import parse_args
 
+def get_dense_batch(batch, dataset='qm9'):
+    from torch_geometric.utils import to_dense_batch, to_dense_adj
+    x, edge_index, edge_attr, batch_idx = batch.x, batch.edge_index, batch.edge_attr, batch.batch
+    x, mask = to_dense_batch(x, batch_idx)
+    if dataset == 'qm9':
+        x = x[..., :4].argmax(-1)
+    elif dataset in ['qm9H', 'qm9_cc']:
+        x = x[..., :5].argmax(-1)
+    else:
+        x = x[..., :9].argmax(-1)
+    adj = to_dense_adj(edge_index, batch_idx, edge_attr)
+    adj_ = adj.argmax(-1) + 1
+    adj_[adj.sum(-1) == 0] = 0
+    mask_adj = mask.unsqueeze(-1) * mask.unsqueeze(-2)
+
+    return x, adj_, mask, mask_adj
 
 def main() -> None:
     # Parse command line arguments
@@ -44,6 +60,7 @@ def main() -> None:
             dataloader = get_dataset(config)
             trainer = Trainer(dataloader, config)
             with torch.no_grad():
+                # X, A, mask, mask_adj = get_dense_batch(next(iter(dataloader['train'])), dataset='qm9H')
                 X, A, mask, mask_adj= trainer.sampler(config.log.n_samples_generation, trainer.denoiser,
                                                       critic=trainer.critic, iter_denoising=config.sampling.id)
 
@@ -52,12 +69,33 @@ def main() -> None:
 
             if r == N_RUNS - 1:
                 keys = runs[0].keys()
+                latex_format = {}
                 for key in keys:
                     val = []
                     for run in runs:
                         val.append(run[key])
-                    print(f'mean {key}: {np.asarray(val).mean()}')
-                    print(f'std {key}: {np.asarray(val).std()}')
+                    mean = np.asarray(val).mean()
+                    std = np.asarray(val).std()
+                    print(f'mean {key}: {mean}')
+                    print(f'std {key}: {std}')
+                    if key in ['valid', 'unique', 'novel']:
+                        mean /= 100
+                        std /= 100
+                        latex_format[key] = f'${mean:.2f} \pm {std:.2f}$'
+                    elif key in ['nspdk', 'degree', 'clustering', 'orbit', 'spectral', 'avg']:
+                        mean *= 1000
+                        std *= 1000
+                        latex_format[key] = f'${mean:.3f} \pm {std:.3f}$'
+                    else:
+                        latex_format[key] = f'${mean:.3f} \pm {std:.3f}$'
+
+                print('Latex format: ')
+                if dataset in ['qm9', 'qm9_cc', 'qm9H', 'zinc']:
+                    print(
+                        f'{latex_format["valid"]} &  {latex_format["fcd"]} & {latex_format["nspdk"]} & {latex_format["unique"]} & {latex_format["novel"]} \\')
+                else:
+                    print(
+                        f'{latex_format["valid"]} &  {latex_format["degree"]} & {latex_format["cluster"]} & {latex_format["spectral"]} & {latex_format["novel"]} \\')
 
         wandb.finish()
 

@@ -59,8 +59,8 @@ class SamplingMetrics:
         gen_mols, num_no_correct = gen_mol(annots, adjs, mask, self.dataset)
         # for i, mol in enumerate(gen_mols):
 
-        if self.dataset in ['qm9_cc', 'qm9_dg', 'qm9H']:
-            dataset = 'qm9'
+        if self.dataset in ['qm9_cc']:
+            dataset = 'qm9H'
             conditional = True
         else:
             conditional = False
