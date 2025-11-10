@@ -176,24 +176,33 @@ def canonicalize_smiles(smiles):
 
 
 def load_smiles(dataset='qm9'):
-    if dataset == 'qm9':
-        col = 'SMILES1'
-    elif dataset == 'zinc':
-        col = 'smiles'
+    if dataset == 'qm9H':
+        with open(f'./data/qm9H/smiles_qm9_test.pkl', 'rb') as f:
+            test_smiles = pickle.load(f)
+            random.Random(42).shuffle(test_smiles)
+        #
+        with open(f'./data/qm9H/smiles_qm9_train.pkl', 'rb') as f:
+            train_smiles = pickle.load(f)
+        return train_smiles, test_smiles
     else:
-        raise ValueError('wrong dataset name in load_smiles')
+        if dataset == 'qm9':
+            col = 'SMILES1'
+        elif dataset == 'zinc':
+            col = 'smiles'
+        else:
+            raise ValueError('wrong dataset name in load_smiles')
 
-    df = pd.read_csv(f'./data/{dataset}/raw/smiles_{dataset}.csv')
+        df = pd.read_csv(f'./data/{dataset}/raw/smiles_{dataset}.csv')
 
-    with open(f'./data/{dataset}/raw/test_idx_{dataset}.json') as f:
-        test_idx = json.load(f)
+        with open(f'./data/{dataset}/raw/test_idx_{dataset}.json') as f:
+            test_idx = json.load(f)
 
-    if dataset == 'qm9':
-        test_idx = test_idx['valid_idxs']
-        test_idx = [int(i) for i in test_idx]
+        if dataset == 'qm9':
+            test_idx = test_idx['valid_idxs']
+            test_idx = [int(i) for i in test_idx]
 
-    train_idx = [i for i in range(len(df)) if i not in test_idx]
-    return list(df[col].loc[train_idx]), list(df[col].loc[test_idx])
+        train_idx = [i for i in range(len(df)) if i not in test_idx]
+        return list(df[col].loc[train_idx]), list(df[col].loc[test_idx])
 
 
 def gen_mol(x, adj, mask, dataset, largest_connected_comp=True):
