@@ -36,7 +36,7 @@ extra_features:
   rrwp_k: 5
 
 sampling:
-  id: 'dif'
+  id: 'sid'
   critical: False
 
 regressor:
