@@ -1,3 +1,5 @@
+import time
+
 import torch
 
 import wandb
@@ -55,48 +57,52 @@ def main() -> None:
         N_RUNS = 5
         config.denoiser_dir = args.denoiser_dir
         wandb.init(project=f'sid_{dataset}_sample', config=config, mode=args.wandb)
+        times = []
 
         for r in range(N_RUNS):
             dataloader = get_dataset(config)
             trainer = Trainer(dataloader, config)
             with torch.no_grad():
                 # X, A, mask, mask_adj = get_dense_batch(next(iter(dataloader['train'])), dataset='qm9H')
+                start_time = time.time()
                 X, A, mask, mask_adj= trainer.sampler(config.log.n_samples_generation, trainer.denoiser,
                                                       critic=trainer.critic, iter_denoising=config.sampling.id)
-
+                sampling_time = time.time() - start_time
+                wandb.log({'sampling_time': sampling_time})
+                times.append(sampling_time)
                 run = trainer.eval_samples(X, A, mask, mask_adj, ema=True)
                 runs.append(run)
 
-            if r == N_RUNS - 1:
-                keys = runs[0].keys()
-                latex_format = {}
-                for key in keys:
-                    val = []
-                    for run in runs:
-                        val.append(run[key])
-                    mean = np.asarray(val).mean()
-                    std = np.asarray(val).std()
-                    print(f'mean {key}: {mean}')
-                    print(f'std {key}: {std}')
-                    if key in ['valid', 'unique', 'novel']:
-                        mean /= 100
-                        std /= 100
-                        latex_format[key] = f'${mean:.2f} \pm {std:.2f}$'
-                    elif key in ['nspdk', 'degree', 'clustering', 'orbit', 'spectral', 'avg']:
-                        mean *= 1000
-                        std *= 1000
-                        latex_format[key] = f'${mean:.3f} \pm {std:.3f}$'
-                    else:
-                        latex_format[key] = f'${mean:.3f} \pm {std:.3f}$'
+        keys = runs[0].keys()
+        latex_format = {}
+        for key in keys:
+            val = []
+            for run in runs:
+                val.append(run[key])
+            mean = np.asarray(val).mean()
+            std = np.asarray(val).std()
+            print(f'mean {key}: {mean}')
+            print(f'std {key}: {std}')
+            if key in ['valid', 'unique', 'novel']:
+                mean *= 100
+                std *= 100
+                latex_format[key] = f'${mean:.2f} \pm {std:.2f}$'
+            elif key in ['nspdk', 'degree', 'cluster', 'orbit', 'spectral']:
+                mean *= 1000
+                std *= 1000
+                latex_format[key] = f'${mean:.3f} \pm {std:.3f}$'
+            else:
+                latex_format[key] = f'${mean:.3f} \pm {std:.3f}$'
 
-                print('Latex format: ')
-                if dataset in ['qm9', 'qm9_cc', 'qm9H', 'zinc']:
-                    print(
-                        f'{latex_format["valid"]} &  {latex_format["fcd"]} & {latex_format["nspdk"]} & {latex_format["unique"]} & {latex_format["novel"]} \\')
-                else:
-                    print(
-                        f'{latex_format["valid"]} &  {latex_format["degree"]} & {latex_format["cluster"]} & {latex_format["spectral"]} & {latex_format["novel"]} \\')
-
+        if dataset in ['qm9', 'qm9_cc', 'qm9H', 'zinc']:
+            print(
+                f'{latex_format["valid"]} &  {latex_format["fcd"]} & {latex_format["nspdk"]} & {latex_format["unique"]} & {latex_format["novel"]} \\')
+        else:
+            latex_format["valid"], latex_format['novel'] = 0, 0
+            print(
+                f'{latex_format["valid"]} &  {latex_format["degree"]} & {latex_format["cluster"]} & {latex_format["orbit"]}& {latex_format["spectral"]} & {latex_format["novel"]} \\')
+        times = np.asarray(times)
+        print(f'time: {times.mean()} \pm {times.std()}')
         wandb.finish()
 
 def update_config(config, dataset, work_type, args):
