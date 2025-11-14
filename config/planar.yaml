@@ -15,6 +15,7 @@ training:
   #dropout: 0
 
 model:
+  architecture: 'gps'
   nhf: 256
   edge_node_ratio: 4
   n_layers: 8
@@ -29,11 +30,13 @@ regressor:
   denoiser: True
 
 extra_features:
-  spectral_embeddings: True
-  k: 5
+  spectral_embeddings: False
+  k: 0
   graph_size: True
   molecular_feat: False
-  cycles: True
+  cycles: False
+  rrwp: True
+  rrwp_k: 5
 
 sampling:
   id: 'dif'
@@ -43,7 +46,7 @@ log:
   n_loggin_steps: 1000
   n_loggin_epochs: 1000
   n_test_samples: 40
-  n_val_samples: 32
+  n_val_samples: 40
   sampling_batch_size: 40
   n_samples_generation: 40
   save_graphs: False

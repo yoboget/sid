@@ -3,7 +3,7 @@ data:
   max_num_nodes: 200
 
 training:
-  batch_size: 16
+  batch_size: 40
   learning_rate: 0.0002
   lr_decay: 0.5
   decay_iteration: 2_000_000
