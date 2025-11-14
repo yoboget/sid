@@ -11,7 +11,7 @@ from string import ascii_uppercase, digits
 from eval.mmd import compute_mmd, gaussian, gaussian_emd, compute_nspdk_mmd, gaussian_tv
 #from utils.graph_utils import adjs_to_graphs
 
-# import graph_tool.all as gt
+import graph_tool.all as gt
 from scipy.stats import chi2
 
 import warnings
