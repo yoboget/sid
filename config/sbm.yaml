@@ -15,6 +15,7 @@ training:
   #dropout: 0
 
 model:
+  architecture: 'GPS'
   nhf: 256
   edge_node_ratio: 2
   n_layers: 8
@@ -34,6 +35,8 @@ extra_features:
   graph_size: True
   molecular_feat: False
   cycles: False
+  rrwp: True
+  rrwp_k: 5
 
 sampling:
   id: 'dif'

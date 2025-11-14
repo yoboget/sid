@@ -63,7 +63,7 @@ def main() -> None:
             dataloader = get_dataset(config)
             trainer = Trainer(dataloader, config)
             with torch.no_grad():
-                X, A, mask, mask_adj = get_dense_batch(next(iter(dataloader['train'])), dataset='zinc')
+                X, A, mask, mask_adj = get_dense_batch(next(iter(dataloader['train'])), dataset='sbm')
                 start_time = time.time()
                 # X, A, mask, mask_adj= trainer.sampler(config.log.n_samples_generation, trainer.denoiser,
                 #                                       critic=trainer.critic, iter_denoising=config.sampling.id)
