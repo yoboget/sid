@@ -6,7 +6,7 @@ def parse_args():
     parser = argparse.ArgumentParser()
     parser.add_argument(
         "--dataset", type=str,
-        default='sbm',
+        default='planar',
         help="Name of the dataset. Available:  qm9, zinc, planar, sbm"
     )
 
@@ -25,12 +25,12 @@ def parse_args():
 
     parser.add_argument(
         "--wandb", type=str,
-        default='on', help="If W&B is online, offline or disabled"
+        default='no', help="If W&B is online, offline or disabled"
     )
 
     parser.add_argument(
         "--denoiser_dir", type=str,
-        default='./wandb/run-20250922_103556-avxsrecv/files/', help="Path to the model directory"
+        default='./wandb/run-20250909_203913-779743yv/files/', help="Path to the model directory"
     )
 
     parser.add_argument(

@@ -30,16 +30,16 @@ regressor:
   denoiser: True
 
 extra_features:
-  spectral_embeddings: False
-  k: 0
+  spectral_embeddings: True
+  k: 5
   graph_size: True
   molecular_feat: False
-  cycles: False
-  rrwp: True
-  rrwp_k: 5
+  cycles: True
+  rrwp: False
+  rrwp_k: 0
 
 sampling:
-  id: 'dif'
+  id: 'sid'
   critical: False
 
 log:

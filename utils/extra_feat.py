@@ -11,7 +11,7 @@ class ExtraFeatures:
         self.cycles = config.extra_features.cycles
         self.rrwp = config.extra_features.rrwp
         self.rrwp_k = config.extra_features.rrwp_k
-        self.n_features = 2 * self.k + self.graph_size + self.rrwp_k + 2 * self.molecular_feat + 3 * self.cycles
+        self.n_features = 2 * self.k + self.graph_size + self.rrwp_k + 2 * self.molecular_feat #+ 3 * self.cycles
         POSITIONAL = False
 
         self.pos = POSITIONAL

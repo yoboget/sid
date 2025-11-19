@@ -68,10 +68,11 @@ class Sampler:
             else:
                 raise NotImplementedError ('Sampling method not implemented.')
             if (i + 1) % 100 == 0:
+                print(f'{i + 1} timesteps done. Sampling resumes...')
+            if i % 100 == 0:
                 elaps = time.time() - start_time
                 print(elaps)
                 elaps_list.append(elaps)
-                print(f'{i + 1} timesteps done. Sampling resumes...')
                 start_time = time.time()
         time_array = np.asarray([elaps_list[1:6]])
         print('time mean and std : ', time_array.mean(), time_array.std())
