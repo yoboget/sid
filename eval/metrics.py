@@ -10,6 +10,13 @@ from utils.plot import plot_batch_networkx_graphs
 import pickle
 import wandb
 
+try:
+    import graph_tool.all as gt
+    GT = True
+except:
+    GT = False
+    pass
+
 from eval.mol_metrics import load_smiles
 
 from rdkit import Chem
@@ -101,9 +108,12 @@ class SamplingMetrics:
             metrics['unique'], metrics['novel'], metrics['valid'] = u, n, v
             # plot_batch_networkx_graphs(gen_graphs[:30], filename='./misc/plots/plan_gen')
         elif dataset == 'sbm':
-            u, n, v = eval_fraction_unique_non_isomorphic_valid(gen_graphs, self.ref_graphs,
+            if GT:
+                u, n, v = eval_fraction_unique_non_isomorphic_valid(gen_graphs, self.ref_graphs,
                                                                 validity_func=is_sbm_graph)
-            metrics['unique'], metrics['novel'], metrics['valid'] = u, n, v
+                metrics['unique'], metrics['novel'], metrics['valid'] = u, n, v
+            else:
+                u, n, v = 0,0,0
         return metrics
 
 
