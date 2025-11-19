@@ -1,6 +1,8 @@
 
 import torch
 import torch.nn.functional as F
+import time
+import numpy as np
 
 from utils.noising import NoiseScheduleDiscrete
 from utils.func import  get_edge_mask, mask_adj_batch
@@ -51,6 +53,9 @@ class Sampler:
 
         if iter_denoising == 'dfm':
             x_t = x_t[..., :-2]
+
+        elaps_list = []
+        start_time = time.time()
         for i, t in enumerate(reversed(range(0, self.T))):
             if iter_denoising == 'sid':
                 x_t, a_t = self.iterative_denoising_step(t, x_t, a_t, mask, mask_adj)
@@ -63,7 +68,13 @@ class Sampler:
             else:
                 raise NotImplementedError ('Sampling method not implemented.')
             if (i + 1) % 100 == 0:
+                elaps = time.time() - start_time
+                print(elaps)
+                elaps_list.append(elaps)
                 print(f'{i + 1} timesteps done. Sampling resumes...')
+                start_time = time.time()
+        time_array = np.asarray([elaps_list[1:6]])
+        print('time mean and std : ', time_array.mean(), time_array.std())
         print('Sampling finished.')
         return x_t, a_t, mask.bool(), mask_adj.bool().squeeze()
 
