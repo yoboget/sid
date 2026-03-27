@@ -3,11 +3,12 @@ import json
 import torch
 import pickle
 import random
+import math
 from torch_geometric.loader import DataLoader
 from utils.utils import batch_to_networkx
 
 from transforms import Qm9Transform, Qm9ConditionalTransform, Qm9DiscreteGuidanceTransform, Qm9HTransform
-from data.datasets import ZINC, QM9_, KekulizedMolDataset, SpectreGraphDataset
+from data.datasets import ZINC, QM9_, KekulizedMolDataset, SpectreGraphDataset, FromNetworkx
 
 def get_dataset(config):
 
@@ -66,6 +67,12 @@ def get_dataset(config):
                                     pre_transform=transforms)
         test_size = len(test)
 
+    elif config.dataset == 'enzymes':
+        data = FromNetworkx(f'./data/{config.dataset}', dataset=config.dataset, pre_transform=transforms)
+        train_idx, val_idx, test_idx = get_random_split_indices(len(data))
+        train, val, test = data[train_idx], data[val_idx], data[test_idx]
+        test_size = len(test_idx)
+
     train_loader = DataLoader(train, batch_size=config.training.batch_size,
                                   shuffle=True, drop_last=True)
     val_loader = DataLoader(val, batch_size=config.log.n_val_samples)
@@ -98,3 +105,36 @@ def save_test_set(test_loader, dataset):
         test_graphs = batch_to_networkx(test_batch)
         with open(f'./data/{dataset}/test_graph.pkl', 'wb') as f:
             pickle.dump(test_graphs, f)
+
+def get_random_split_indices(n_instances: int) -> tuple[torch.Tensor, torch.Tensor, torch.Tensor]:
+    """
+    Splits a dataset of a given size into random train, validation, and test sets.
+
+    The split is performed as follows:
+    1. Test set: 20% of the total dataset size, rounded up.
+    2. The remaining 80% is designated for training and validation.
+    3. Validation set: 20% of this remaining set, rounded up.
+    4. Training set: The rest of the instances.
+
+    Args:
+        n_instances (int): The total number of instances in the dataset.
+
+    Returns:
+        A tuple containing the training indices, validation indices, and test indices.
+    """
+    # Create and shuffle all indices to ensure random splits
+    g = torch.Generator()
+    g.manual_seed(42)
+    all_indices = torch.randperm(n_instances, generator=g)
+
+    # 1. Split into test and a temporary training set (20% / 80%)
+    test_size = math.ceil(n_instances * 0.20)
+    test_idx = all_indices[:test_size]
+    train_val_idx = all_indices[test_size:]
+
+    # 2. Split the temporary training set into final validation and train sets (20% / 80%)
+    val_size = math.ceil(len(train_val_idx) * 0.20)
+    val_idx = train_val_idx[:val_size]
+    train_idx = train_val_idx[val_size:]
+
+    return train_idx, val_idx, test_idx

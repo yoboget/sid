@@ -238,6 +238,8 @@ class FromNetworkx(InMemoryDataset):
                 data.max_num_nodes = 20
             elif self.dataset == 'enzymes':
                 data.max_num_nodes = 125
+                data.x = torch.ones(data.num_nodes, 1, dtype=torch.float)
+                data.edge_attr = torch.ones(data.edge_index.shape[-1], 1, dtype=torch.float)
             data_list.append(data)
         data, slices = self.collate(data_list)
         torch.save((data, slices), self.processed_paths[0])
