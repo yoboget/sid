@@ -53,13 +53,15 @@ def main() -> None:
         trainer.train()
 
     elif work_type == 'sample':
+        torch.manual_seed(42)
         runs = []
         N_RUNS = 5
         config.denoiser_dir = args.denoiser_dir
         wandb.init(project=f'sid_{dataset}_sample', config=config, mode=args.wandb)
         times = []
 
-        for r in range(N_RUNS):
+        for r in  [16, 32, 64, 128, 256, 512]: #range(N_RUNS):
+            config.model.T = r
             dataloader = get_dataset(config)
             trainer = Trainer(dataloader, config)
             with torch.no_grad():

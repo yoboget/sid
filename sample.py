@@ -4,7 +4,7 @@ import torch.nn.functional as F
 import time
 import numpy as np
 
-from utils.noising import NoiseScheduleDiscrete
+from utils.noising import NoiseScheduleDiscrete, NoiserDense
 from utils.func import  get_edge_mask, mask_adj_batch
 from utils.conditional_sampling import get_cfg_conditional_distribution, get_gradiant
 from torch.distributions.categorical import Categorical
@@ -22,7 +22,7 @@ class Sampler:
         self.T = noiser.T
         self.diff_x, self.diff_e = diff
         self.prior = prior
-        self.noise_sched = NoiseScheduleDiscrete('cosine', self.T)
+        self.noise_sched = NoiserDense(self.T, self.prior) #NoiseScheduleDiscrete('cosine', self.T)
         self.sampling_batch_size = sampling_batch_size
 
 

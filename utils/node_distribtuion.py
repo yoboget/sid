@@ -2,7 +2,7 @@ import os
 import torch
 
 def get_num_nodes_distribution(loader, max_num_nodes, dataset):
-    filepath = f'./data/{dataset}/node_distribtuion.pt'
+    filepath = f'./data/{dataset}/node_distribution.pt'
     if os.path.exists(filepath):
         num_nodes_distribution = torch.load(filepath)
     else:

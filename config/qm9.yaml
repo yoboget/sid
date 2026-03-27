@@ -21,7 +21,7 @@ model:
   n_layers: 8
   mlp_n_layers: 3
   normalization: layer_norm
-  T: 1024
+  T: 32
   prior: marginal # 'masking', 'absorbing', 'marginal'
   ema: True
 
@@ -35,7 +35,7 @@ extra_features:
   rrwp_k: 5
 
 sampling:
-  id: 'dif'
+  id: 'dfm'
   critical: False
 
 regressor:
@@ -45,6 +45,6 @@ log:
   n_loggin_steps: 1000
   n_loggin_epochs: 20
   n_val_samples: 1000
-  sampling_batch_size: 10000
-  n_samples_generation: 10000
+  sampling_batch_size: 1000
+  n_samples_generation: 1000
   save_graphs: False

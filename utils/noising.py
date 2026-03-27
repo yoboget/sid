@@ -273,7 +273,7 @@ class NoiserDense:
         return a, noise_mask
 
     def cosine(self, t):
-        return torch.cos(0.5 * np.pi * (t))
+        return torch.cos(0.5 * np.pi * (t))**2
 
     def cocosine(self, t):
         return torch.tensor((2 / np.pi) * torch.arccos(1-t))
