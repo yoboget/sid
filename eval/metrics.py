@@ -127,7 +127,7 @@ class SamplingMetrics:
         elif self.dataset in ['qm9_cc', 'qm9_dg', 'qm9H']:
             node_names = ['H', 'C', 'N', 'O', 'F']
             edge_names = ['no_bond', 'single', 'double', 'triple']
-        elif self.dataset in ['planar', 'sbm']:
+        elif self.dataset in ['planar', 'sbm', 'enzymes']:
             node_names = []
             edge_names = ['no_edge', 'edge']
 

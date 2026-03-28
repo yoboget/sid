@@ -43,7 +43,7 @@ sampling:
   critical: False
 
 log:
-  n_loggin_steps: 1
+  n_loggin_steps: 100
   n_loggin_epochs: 256
   n_test_samples: 117
   n_val_samples: 94
