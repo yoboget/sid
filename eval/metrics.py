@@ -28,7 +28,7 @@ class SamplingMetrics:
         self.dataset = dataset
         self.max_num_nodes = max_num_nodes
         self.sampling = sampling
-        if dataset in ['planar', 'sbm']:
+        if dataset in ['planar', 'sbm', 'enzymes']:
             self.val_loader = ref_loader
             batch = next(iter(ref_loader))
             X, A, mask = batch_to_dense(batch, max_num_nodes=max_num_nodes)
