@@ -48,7 +48,7 @@ class SamplingMetrics:
         if self.dataset in ['qm9', 'zinc', 'qm9_cc', 'qm9_dg', 'qm9H']:
             metrics = self.molecular_metrics((X, A, mask))
 
-        elif self.dataset in ['planar', 'sbm']:
+        elif self.dataset in ['planar', 'sbm', 'enzymes']:
             gen_graphs = get_networkx_from_dense(X, A, mask)
             metrics = self.generic_graph_metrics(gen_graphs, self.dataset)
         else:
