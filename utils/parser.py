@@ -16,7 +16,7 @@ def parse_args():
     )
 
     parser.add_argument(
-        "--train_model", type=bool, default=False, help="Whether to train model"
+        "--train_model", type=bool, default=True, help="Whether to train model"
     )
 
     parser.add_argument(
@@ -25,7 +25,7 @@ def parse_args():
 
     parser.add_argument(
         "--wandb", type=str,
-        default='on', help="If W&B is online, offline or disabled"
+        default='no', help="If W&B is online, offline or disabled"
     )
 
     parser.add_argument(
